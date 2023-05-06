@@ -7,6 +7,15 @@
     # recreate: true
   register: output
 
+- name: Recreate multipass VM
+  theko2fi.multipass.multipass_vm:
+    name: "zazilapus"
+    state: present
+    recreate: true
+  register: output
+
 - name: Debug ouptut
   ansible.builtin.debug:
     var: output
+
+
