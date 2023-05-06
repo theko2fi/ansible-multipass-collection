@@ -1,0 +1,32 @@
+- name: Create Multipass VM
+  hosts: localhost
+  connection: local
+  vars:
+    multipass_vm_name: "dd"
+  tasks:
+    - name: Create multipass VM
+      theko2fi.multipass.multipass_vm:
+        name: "{{ multipass_vm_name }}"
+        state: present
+        recreate: true
+      register: output
+
+    - name: Debug ouptut
+      ansible.builtin.debug:
+        var: output
+#     - name: add created multipass VM to host list
+#       ansible.builtin.add_host:
+#         name: "{{ multipass_vm_name }}"
+#         ansible_multipass_host: "{{ multipass_vm_name }}"
+#         ansible_python_interpreter: '/usr/bin/python3'
+# - name: play on Multipass VM
+#   hosts: all
+#   connection: theko2fi.multipass.multipass
+#   tasks:
+#     - name: ping my multipass VM
+#       ping:
+
+#     - name: copy file to multipass VM
+#       ansible.builtin.copy:
+#         content: "bonjour"
+#         dest: "/home/ubuntu/bonjour.txt"
