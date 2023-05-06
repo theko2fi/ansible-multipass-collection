@@ -35,7 +35,8 @@ def main():
 		argument_spec=dict(
 		name = dict(required=True, type='str'),
 		cpu = dict(required=False, type=int, default=1),
-		state = dict(required=False, type=str, default='present')
+		state = dict(required=False, type=str, default='present'),
+		recreate = dict(required=False, type=bool, default=False)
 		)
 	)
     
@@ -49,6 +50,11 @@ def main():
 			module.exit_json(changed=True, resultat=vm.info())
 		else:
 			vm = multipassclient.get_vm(vm_name=vm_name)
+			if module.params.get('recreate'):
+				vm.delete()
+				multipassclient.purge()
+				vm = multipassclient.launch(vm_name=vm_name, cpu=cpu)
+				module.exit_json(changed=True, resultat=vm.info())
 			module.exit_json(changed=False, resultat=vm.info())
 	if state in ('absent'):
 		if is_vm_deleted(vm_name=vm_name):
