@@ -2,7 +2,7 @@
 
 - name: Create multipass VM
   theko2fi.multipass.multipass_vm:
-    name: "{{ multipass_vm_name }}"
+    name: "zazilapus"
     state: present
     # recreate: true
   register: output
