@@ -98,6 +98,11 @@ options:
 	choices:
 	  - present
 	  - absent
+  recreate:
+    description:
+      - Use with present and started states to force the re-creation of an existing Virtual machine.
+    type: bool
+    default: false
 '''
 
 EXAMPLES='''
