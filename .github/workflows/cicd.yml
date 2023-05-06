@@ -1,0 +1,16 @@
+name: "theko2fi.multipass collection  CI/CD"
+on:
+  - push
+  - pull_request
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run:
+          snap install multipass
+          pip3 install multipass-sdk
+      - uses: actions/checkout@v3
+      - uses: ansible-community/ansible-test-gh-action@release/v1
+        with:
+          testing-type: integration
