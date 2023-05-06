@@ -7,7 +7,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - run:
+      - run: |
           sudo snap install multipass
           sudo pip3 install multipass-sdk
       - uses: actions/checkout@v3
