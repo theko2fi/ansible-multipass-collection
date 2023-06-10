@@ -1,21 +1,31 @@
 ---
 
-- name: Create multipass VM
+- name: Create a multipass VM
   theko2fi.multipass.multipass_vm:
     name: "zazilapus"
     state: present
-    # recreate: true
-  register: output
+    cpu: 2
+  register: create_vm
 
-- name: Recreate multipass VM
+- name: Verify that VM has been created
+  ansible.builtin.assert:
+    that:
+      - create_vm.changed
+      - create_vm.resultat.info.zazilapus.state == "Running"
+      - create_vm.resultat.info.zazilapus.cpu_count == 2
+
+- name: Recreate the multipass VM
   theko2fi.multipass.multipass_vm:
     name: "zazilapus"
     state: present
     recreate: true
-  register: output
+  register: recreate_vm
 
-- name: Debug ouptut
-  ansible.builtin.debug:
-    var: output
+- name: Verify that VM has been recreated
+  ansible.builtin.assert:
+    that:
+      - recreate_vm.changed
+      - recreate_vm.resultat.info.zazilapus.state == "Running"
+      - recreate_vm.resultat.info.zazilapus.cpu_count == 1
 
 
