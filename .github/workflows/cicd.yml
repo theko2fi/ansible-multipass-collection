@@ -7,10 +7,60 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          sudo snap install multipass
-          sudo pip3 install multipass-sdk
-      - uses: actions/checkout@v3
-      - uses: ansible-community/ansible-test-gh-action@release/v1
+      - name: Fetch the repo
+        uses: actions/checkout@v3
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
         with:
-          testing-type: integration
+          token: ${{ secrets.DIGITALOCEAN_API_TOKEN }}
+
+      - name: Create digitalocean droplet
+        id: droplet-creator
+        run: |
+          DROPLET_IP=$(doctl compute droplet create --image ubuntu-22-04-x64 --size s-4vcpu-8gb --region nyc1 --user-data-file .github/files/user-data.yml --ssh-keys ${{ secrets.SSH_KEY_ID }} --wait --output json ansible-multipass-droplet | jq -r '.[].networks.v4[] | select(.type == "public") | .ip_address')
+          echo "DROPLET_IP=${DROPLET_IP}" >> "$GITHUB_ENV"
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Ansible
+        run: pip3 install ansible
+
+      - name: Install the collection
+        run: ansible-galaxy collection install ${GITHUB_WORKSPACE}
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          name: id_rsa
+          known_hosts: unnecessary
+          if_key_exists: fail
+
+      - name: ssh_known_hosts
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 30
+          max_attempts: 3
+          command: ssh-keyscan -4 -t rsa -p 22 -T 240 ${{ env.DROPLET_IP }} >> ~/.ssh/known_hosts
+      
+      - name: check cloud-init status
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 5
+          command: ssh ${{ secrets.SSH_USERNAME }}@${{ env.DROPLET_IP }} 'cloud-init status' | grep -q "done"
+
+      - name: Run ansible-test
+        run: |
+          cd ~/.ansible/collections/ansible_collections/theko2fi/multipass
+          ansible-test integration --target ssh:${{ secrets.SSH_USERNAME }}@${{ env.DROPLET_IP }},python=3.10
+
+      - name: Delete droplet
+        if: ${{ always() }}
+        run: doctl compute droplet delete ansible-multipass-droplet --force
