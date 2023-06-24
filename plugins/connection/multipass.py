@@ -1,6 +1,4 @@
-# (c) 2012, Michael DeHaan <michael.dehaan@gmail.com>
-# (c) 2015, 2017 Toshio Kuratomi <tkuratomi@ansible.com>
-# (c) 2023 Kenneth KOFFI
+# (c) 2023 Kenneth KOFFI <@theko2fi>
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -41,7 +39,7 @@ class Connection(ConnectionBase):
         self.default_user = getpass.getuser()
 
     def _connect(self):
-        ''' connect to the local host; nothing to do here '''
+        ''' connect to the multipass VM; nothing to do here '''
 
         # Because we haven't made any remote connection we're running as
         # the local user, rather than as whatever is configured in remote_user.
@@ -53,7 +51,7 @@ class Connection(ConnectionBase):
         return self
 
     def exec_command(self, cmd, in_data=None, sudoable=True):
-        ''' run a command on the local host '''
+        ''' run a command on the multipass VM '''
 
         super(Connection, self).exec_command(cmd, in_data=in_data, sudoable=sudoable)
 
@@ -150,7 +148,7 @@ class Connection(ConnectionBase):
         return (p.returncode, stdout, stderr)
 
     def put_file(self, in_path, out_path):
-        ''' transfer a file from local to local '''
+        ''' transfer a file from local to the multipass VM '''
 
         super(Connection, self).put_file(in_path, out_path)
 
@@ -169,7 +167,7 @@ class Connection(ConnectionBase):
             raise AnsibleError("failed to transfer file to {0}: {1}".format(to_native(out_path), to_native(e)))
 
     def fetch_file(self, in_path, out_path):
-        ''' fetch a file from local to local -- for compatibility '''
+        ''' fetch a file from the multipass VM to local -- for compatibility '''
 
         super(Connection, self).fetch_file(in_path, out_path)
 
