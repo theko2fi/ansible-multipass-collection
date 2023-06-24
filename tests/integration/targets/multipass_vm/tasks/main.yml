@@ -12,7 +12,7 @@
     that:
       - create_vm.changed
       - create_vm.resultat.info.zazilapus.state == "Running"
-      - create_vm.resultat.info.zazilapus.cpu_count == 2
+      - create_vm.resultat.info.zazilapus.cpu_count == "2"
 
 - name: Recreate the multipass VM
   theko2fi.multipass.multipass_vm:
@@ -26,6 +26,4 @@
     that:
       - recreate_vm.changed
       - recreate_vm.resultat.info.zazilapus.state == "Running"
-      - recreate_vm.resultat.info.zazilapus.cpu_count == 1
-
-
+      - recreate_vm.resultat.info.zazilapus.cpu_count == "1"
