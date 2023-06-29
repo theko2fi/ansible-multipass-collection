@@ -131,7 +131,7 @@ options:
         a virtual machine will be created. If an instance matches the name but
         the provided configuration does not match, the instance will be updated,
         if it can be. If it cannot be updated, it will be removed and re-created
-        with the requested config.
+        with the requested config..
     required: false
     type: str
     default: present
