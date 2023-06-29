@@ -31,26 +31,34 @@ def main():
 	module = AnsibleModule(
 		argument_spec=dict(
 		name = dict(required=True, type='str'),
+		image = dict(required=False, type=str, default='ubuntu-lts'),
 		cpu = dict(required=False, type=int, default=1),
+		memory = dict(required=False, type=str, default='1G'),
+		disk = dict(required=False, type=str, default='5G'),
+		cloud_init = dict(required=False, type=str, default=None),
 		state = dict(required=False, type=str, default='present'),
 		recreate = dict(required=False, type=bool, default=False)
 		)
 	)
     
 	vm_name = module.params.get('name')
+	image = module.params.get('image')
 	cpu = module.params.get('cpu')
 	state = module.params.get('state')
+	memory = module.params.get('memory')
+	disk = module.params.get('disk')
+	cloud_init = module.params.get('cloud_init')
 
 	if state in ('present'):
 		if not is_vm_exists(vm_name):
-			vm = multipassclient.launch(vm_name=vm_name, cpu=cpu)
+			vm = multipassclient.launch(vm_name=vm_name, image=image, cpu=cpu, mem=memory, disk=disk, cloud_init=cloud_init)
 			module.exit_json(changed=True, resultat=vm.info())
 		else:
 			vm = multipassclient.get_vm(vm_name=vm_name)
 			if module.params.get('recreate'):
 				vm.delete()
 				multipassclient.purge()
-				vm = multipassclient.launch(vm_name=vm_name, cpu=cpu)
+				vm = multipassclient.launch(vm_name=vm_name, image=image, cpu=cpu, mem=memory, disk=disk, cloud_init=cloud_init)
 				module.exit_json(changed=True, resultat=vm.info())
 			module.exit_json(changed=False, resultat=vm.info())
 	if state in ('absent'):
@@ -76,12 +84,30 @@ description: Module to manage Multipass VM
  
 options:
   name:
-	description: the VM's hostname
-	required: yes
-	type: str
+  image:
+	  description: The image used to create the VM.
+	  required: false
+	  type: str
+	  default: 'ubuntu-lts'
   cpu:
-	description: number of cpu of the VM
-	required: false
+  memory:
+	  description: The amount of RAM to allocate to the VM.
+	  required: false
+	  type: str
+	  default: '1G'
+  disk:
+	  description:
+      - Disk space to allocate to the VM in format C(<number>[<unit>]).
+      - Positive integers, in bytes, or with V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte) suffix.
+      - Omitting the unit defaults to bytes.
+	  required: false
+	  type: str
+	  default: '5G'
+	cloud_init:
+    description: Path or URL to a user-data cloud-init configuration.
+    required: False
+    type: str
+    default: None
   state:
 	description: the state of the VM
 	  - 'C(absent) - An instance matching the specified name will be stopped and deleted.
