@@ -24,10 +24,7 @@ def get_vm_state(vm_name: str):
 
 def is_vm_deleted(vm_name: str):
 	vm_state = get_vm_state(vm_name=vm_name)
-	if vm_state == 'Deleted':
-		return True
-	else:
-		return False
+	return vm_state == 'Deleted'
 
 
 def main():
