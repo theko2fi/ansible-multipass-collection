@@ -25,6 +25,10 @@ def get_vm_state(vm_name: str):
 def is_vm_deleted(vm_name: str):
 	vm_state = get_vm_state(vm_name=vm_name)
 	return vm_state == 'Deleted'
+	
+def is_vm_running(vm_name: str):
+	vm_state = get_vm_state(vm_name=vm_name)
+	return vm_state == 'Running'
 
 
 def main():
@@ -118,11 +122,11 @@ options:
 		default: None
 	state:
 		description:
-			- 'C(absent) - An instance matching the specified name will be stopped and deleted.
-			- 'C(present) - Asserts the existence of an instance matching the name and any provided configuration parameters. If no
+			- C(absent) - An instance matching the specified name will be stopped and deleted.
+			- C(present) - Asserts the existence of an instance matching the name and any provided configuration parameters. If no
 			  instance matches the name, a virtual machine will be created. If an instance matches the name but the provided configuration
 			  does not match, the instance will be updated, if it can be. If it cannot be updated, it will be removed and re-created
-			  with the requested config.'
+			  with the requested config.
 		required: false
 		type: str
 		default: present
