@@ -117,18 +117,20 @@ options:
     type: str
     default: None
   state:
-	description: the state of the VM
-	  - 'C(absent) - An instance matching the specified name will be stopped and deleted.
+	  description:
+	    - 'C(absent) - An instance matching the specified name will be stopped and deleted.
       - 'C(present) - Asserts the existence of an instance matching the name and any provided configuration parameters. If no
         instance matches the name, a virtual machine will be created. If an instance matches the name but the provided configuration
         does not match, the instance will be updated, if it can be. If it cannot be updated, it will be removed and re-created
         with the requested config.'
-	required: false
-	type: str
-	default: present
-	choices:
-	  - present
-	  - absent
+	  required: false
+	  type: str
+	  default: present
+	  choices:
+	    - present
+	    - started
+	    - absent
+	    - stopped
   recreate:
     description:
       - Use with present and started states to force the re-creation of an existing Virtual machine.
