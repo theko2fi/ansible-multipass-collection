@@ -182,19 +182,16 @@ class Connection(ConnectionBase):
 
 DOCUMENTATION = '''
 author:
-    - Kenneth KOFFI (!UNKNOWN)
+    - Kenneth KOFFI (@theko2fi)
 name: multipass
-short_description: Run tasks in multipass containers
+short_description: Run tasks in multipass VMs
 description:
-    - Run commands or put/fetch files to an existing multipass container.
-    - Uses the multipass CLI to execute commands in the container. If you prefer
-      to directly connect to the multipass daemon, use the
-      R(community.multipass.multipass_api,ansible_collections.community.multipass.multipass_api_connection)
-      connection plugin.
+    - Run commands or put/fetch files to an existing multipass VM.
+    - Uses the multipass CLI to execute commands in the virtual machine.
 options:
     remote_addr:
         description:
-            - The name of the container you want to access.
+            - The name of the VM you want to access.
         default: inventory_hostname
         vars:
             - name: inventory_hostname
@@ -228,10 +225,10 @@ options:
     container_timeout:
         default: 10
         description:
-            - Controls how long we can wait to access reading output from the container once execution started.
+            - Controls how long we can wait to access reading output from the VM once execution started.
         env:
             - name: ANSIBLE_TIMEOUT
-            - name: ANSIBLE_multipass_TIMEOUT
+            - name: ANSIBLE_MULTIPASS_TIMEOUT
               version_added: 2.2.0
         ini:
             - key: timeout
