@@ -11,6 +11,7 @@
       push:
         branches:
           - main
+          - documentation
         tags:
           - '*'
       # Run CI once per day (at 09:00 UTC)
