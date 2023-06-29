@@ -5,6 +5,8 @@
     name: "zazilapus"
     state: present
     cpu: 2
+    memory: '2G'
+    disk: 8G
   register: create_vm
 
 - name: Verify that VM has been created
@@ -13,6 +15,8 @@
       - create_vm.changed
       - create_vm.resultat.info.zazilapus.state == "Running"
       - create_vm.resultat.info.zazilapus.cpu_count == "2"
+      - create_vm.resultat.info.zazilapus.memory.total|filesizeformat() == "2.1 GB"
+      - create_vm.resultat.info.zazilapus.disks.sda1.total|filesizeformat() == "8.2 GB"
 
 - name: Recreate the multipass VM
   theko2fi.multipass.multipass_vm:
@@ -21,12 +25,14 @@
     recreate: true
   register: recreate_vm
 
-- name: Verify that VM has been recreated
+- name: Verify that VM has been recreated with default values
   ansible.builtin.assert:
     that:
       - recreate_vm.changed
       - recreate_vm.resultat.info.zazilapus.state == "Running"
       - recreate_vm.resultat.info.zazilapus.cpu_count == "1"
+      - recreate_vm.resultat.info.zazilapus.memory.total|filesizeformat() == "998.1 MB"
+      - recreate_vm.resultat.info.zazilapus.disks.sda1.total|filesizeformat() == "5.1 GB"
 
 - name: Delete the multipass VM
   theko2fi.multipass.multipass_vm:
