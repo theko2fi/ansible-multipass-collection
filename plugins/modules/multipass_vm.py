@@ -81,7 +81,7 @@ if __name__ == "__main__":
 	main()
 
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: multipass_vm
 author: "Kenneth KOFFI (@theko2fi)"
