@@ -87,9 +87,7 @@ author: Kenneth KOFFI (@theko2fi)
 description: Module to manage Multipass VM
 options:
 	name:
-		description:
-			- Name for the VM.
-			- If it is primary (the configured primary instance name), the user's home directory is mounted inside the newly launched instance, in Home.
+		description: Name of the VM.
 		required: yes
 		type: str
 	image:
