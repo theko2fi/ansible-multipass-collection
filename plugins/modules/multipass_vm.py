@@ -81,16 +81,15 @@ if __name__ == "__main__":
 	main()
 
 
-DOCUMENTATION='''
+DOCUMENTATION = '''
 module: multipass_vm
 author: Kenneth KOFFI (@theko2fi)
 description: Module to manage Multipass VM
- 
 options:
 	name:
 		description:
 			- Name for the VM.
-			- If it is C('primary') (the configured primary instance name), the user's home directory is mounted inside the newly launched instance, in C('Home').
+			- If it is primary (the configured primary instance name), the user's home directory is mounted inside the newly launched instance, in Home.
 		required: yes
 		type: str
 	image:
