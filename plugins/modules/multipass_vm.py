@@ -84,8 +84,11 @@ if __name__ == "__main__":
 DOCUMENTATION = '''
 ---
 module: multipass_vm
-author: Kenneth KOFFI (@theko2fi)
-description: Module to manage Multipass VM.
+author: "Kenneth KOFFI (@theko2fi)"
+short_description: Module to manage Multipass VM
+description:
+  - Longer description of the module.
+  - You might include instructions.
 options:
   name:
     description: Name of the VM.
