@@ -132,8 +132,7 @@ options:
 	    - absent
 	    - stopped
   recreate:
-    description:
-      - Use with present and started states to force the re-creation of an existing Virtual machine.
+    description: Use with C(present) and C(started) states to force the re-creation of an existing virtual machine.
     type: bool
     default: false
 '''
