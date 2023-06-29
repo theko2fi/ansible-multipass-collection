@@ -27,3 +27,14 @@
       - recreate_vm.changed
       - recreate_vm.resultat.info.zazilapus.state == "Running"
       - recreate_vm.resultat.info.zazilapus.cpu_count == "1"
+
+- name: Delete the multipass VM
+  theko2fi.multipass.multipass_vm:
+    name: "zazilapus"
+    state: absent
+  register: delete_vm
+
+- name: Verify that VM has been deleted
+  ansible.builtin.assert:
+    that:
+      - delete_vm.changed
