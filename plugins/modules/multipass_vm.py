@@ -82,6 +82,7 @@ if __name__ == "__main__":
 
 
 DOCUMENTATION = '''
+---
 module: multipass_vm
 author: Kenneth KOFFI (@theko2fi)
 description: Module to manage Multipass VM.
@@ -94,7 +95,7 @@ options:
     description: The image used to create the VM.
     required: false
     type: str
-    default: 'ubuntu-lts'
+    default: ubuntu-lts
   cpu:
     description: The number of CPUs of the VM.
     required: false
@@ -103,26 +104,30 @@ options:
     description: The amount of RAM to allocate to the VM.
     required: false
     type: str
-    default: '1G'
+    default: 1G
   disk:
     description:
       - Disk space to allocate to the VM in format C(<number>[<unit>]).
-      - Positive integers, in bytes, or with V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte) suffix.
+      - Positive integers, in bytes, or with V(K) (kibibyte, 1024B), V(M)
+        (mebibyte), V(G) (gibibyte) suffix.
       - Omitting the unit defaults to bytes.
     required: false
     type: str
-    default: '5G'
+    default: 5G
   cloud_init:
     description: Path or URL to a user-data cloud-init configuration.
-    required: False
+    required: false
     type: str
     default: None
   state:
     description:
-      - C(absent) - An instance matching the specified name will be stopped and deleted.
-      - C(present) - Asserts the existence of an instance matching the name and any provided configuration parameters. If no
-        instance matches the name, a virtual machine will be created. If an instance matches the name but the provided configuration
-        does not match, the instance will be updated, if it can be. If it cannot be updated, it will be removed and re-created
+      - C(absent) - An instance matching the specified name will be stopped and
+        deleted.
+      - C(present) - Asserts the existence of an instance matching the name and
+        any provided configuration parameters. If no instance matches the name,
+        a virtual machine will be created. If an instance matches the name but
+        the provided configuration does not match, the instance will be updated,
+        if it can be. If it cannot be updated, it will be removed and re-created
         with the requested config.
     required: false
     type: str
@@ -133,7 +138,8 @@ options:
       - absent
       - stopped
   recreate:
-    description: Use with C(present) and C(started) states to force the re-creation of an existing virtual machine.
+    description: Use with C(present) and C(started) states to force the re-creation
+      of an existing virtual machine.
     type: bool
     default: false
 '''
