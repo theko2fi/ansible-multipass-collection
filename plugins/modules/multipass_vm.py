@@ -95,6 +95,9 @@ options:
 	  type: str
 	  default: 'ubuntu-lts'
   cpu:
+	  description: The number of CPUs of the VM.
+	  required: false
+	  type: int
   memory:
 	  description: The amount of RAM to allocate to the VM.
 	  required: false
