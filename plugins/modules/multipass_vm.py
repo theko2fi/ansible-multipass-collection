@@ -25,6 +25,10 @@ def get_vm_state(vm_name: str):
 def is_vm_deleted(vm_name: str):
 	vm_state = get_vm_state(vm_name=vm_name)
 	return vm_state == 'Deleted'
+	
+def is_vm_running(vm_name: str):
+	vm_state = get_vm_state(vm_name=vm_name)
+	return vm_state == 'Running'
 
 
 def main():
@@ -77,92 +81,99 @@ if __name__ == "__main__":
 	main()
 
 
-DOCUMENTATION='''
+DOCUMENTATION = '''
+---
 module: multipass_vm
-author: Kenneth KOFFI (@theko2fi)
-description: Module to manage Multipass VM
- 
+author: "Kenneth KOFFI (@theko2fi)"
+short_description: Module to manage Multipass VM
+description:
+  - Manage the life cycle of Multipass virtual machines (create, start, stop, delete).
+  - You might include instructions.
 options:
-	name:
-		description:
-			- Name for the VM.
-			- If it is C('primary') (the configured primary instance name), the user's home directory is mounted inside the newly launched instance, in C('Home').
-		required: yes
-		type: str
-	image:
-		description: The image used to create the VM.
-		required: false
-		type: str
-		default: 'ubuntu-lts'
-	cpu:
-		description: The number of CPUs of the VM.
-		required: false
-		type: int
-	memory:
-		description: The amount of RAM to allocate to the VM.
-		required: false
-		type: str
-		default: '1G'
-	disk:
-		description:
-			- Disk space to allocate to the VM in format C(<number>[<unit>]).
-			- Positive integers, in bytes, or with V(K) (kibibyte, 1024B), V(M) (mebibyte), V(G) (gibibyte) suffix.
-			- Omitting the unit defaults to bytes.
-		required: false
-		type: str
-		default: '5G'
-	cloud_init:
-		description: Path or URL to a user-data cloud-init configuration.
-		required: False
-		type: str
-		default: None
-	state:
-		description:
-			- 'C(absent) - An instance matching the specified name will be stopped and deleted.
-			- 'C(present) - Asserts the existence of an instance matching the name and any provided configuration parameters. If no
-			  instance matches the name, a virtual machine will be created. If an instance matches the name but the provided configuration
-			  does not match, the instance will be updated, if it can be. If it cannot be updated, it will be removed and re-created
-			  with the requested config.'
-		required: false
-		type: str
-		default: present
-		choices:
-			- present
-			- started
-			- absent
-			- stopped
-	recreate:
-		description: Use with C(present) and C(started) states to force the re-creation of an existing virtual machine.
-		type: bool
-		default: false
+  name:
+    description:
+      - Name for the VM.
+	  - If it is C('primary') (the configured primary instance name), the user's home directory is mounted inside the newly launched instance, in C('Home').
+    required: yes
+    type: str
+  image:
+    description: The image used to create the VM.
+    required: false
+    type: str
+    default: ubuntu-lts
+  cpu:
+    description: The number of CPUs of the VM.
+    required: false
+    type: int
+  memory:
+    description: The amount of RAM to allocate to the VM.
+    required: false
+    type: str
+    default: 1G
+  disk:
+    description:
+      - Disk space to allocate to the VM in format C(<number>[<unit>]).
+      - Positive integers, in bytes, or with V(K) (kibibyte, 1024B), V(M)
+        (mebibyte), V(G) (gibibyte) suffix.
+      - Omitting the unit defaults to bytes.
+    required: false
+    type: str
+    default: 5G
+  cloud_init:
+    description: Path or URL to a user-data cloud-init configuration.
+    required: false
+    type: str
+    default: None
+  state:
+    description:
+      - C(absent) - An instance matching the specified name will be stopped and
+        deleted.
+      - C(present) - Asserts the existence of an instance matching the name and
+        any provided configuration parameters. If no instance matches the name,
+        a virtual machine will be created. If an instance matches the name but
+        the provided configuration does not match, the instance will be updated,
+        if it can be. If it cannot be updated, it will be removed and re-created
+        with the requested config.
+    required: false
+    type: str
+    default: present
+    choices:
+      - present
+      - started
+      - absent
+      - stopped
+  recreate:
+    description: Use with C(present) and C(started) states to force the re-creation
+      of an existing virtual machine.
+    type: bool
+    default: false
 '''
 
-EXAMPLES='''
+EXAMPLES = '''
 - name: "Create a VM with default parameters"
   theko2fi.multipass.multipass_vm:
-	name: "foo"
+    name: "foo"
 
 - name: "Create a VM with custom specs"
   theko2fi.multipass.multipass_vm:
-	name: "foo"
-	cpu: 2
-	memory: 2G
-	disk: 5G
+    name: "foo"
+    cpu: 2
+    memory: 2G
+    disk: 5G
 
 - name: "Recreate a VM"
   theko2fi.multipass.multipass_vm:
-	name: "foo"
-	cpu: 4
-	memory: 2G
-	disk: 10G
-	recreate: true
+    name: "foo"
+    cpu: 4
+    memory: 2G
+    disk: 10G
+    recreate: true
 	
 - name: "Delete a VM"
   theko2fi.multipass.multipass_vm:
-	name: "foo"
-	state: absent
+    name: "foo"
+    state: absent
 '''
-
 
 RETURN = '''
 resultat:

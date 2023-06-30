@@ -1,7 +1,9 @@
 name: "theko2fi.multipass collection  CI/CD"
 on:
-  - push
-  - pull_request
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
   test:
