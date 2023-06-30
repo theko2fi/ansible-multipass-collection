@@ -93,7 +93,7 @@ options:
   name:
     description:
       - Name for the VM.
-	  - If it is C('primary') (the configured primary instance name), the user's home directory is mounted inside the newly launched instance, in C('Home').
+      - If it is C('primary') (the configured primary instance name), the user's home directory is mounted inside the newly launched instance, in C('Home').
     required: yes
     type: str
   image:
