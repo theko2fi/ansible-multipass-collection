@@ -1,1 +1,8 @@
 plugins/connection/__pycache__/
+dest/
+tests/output/
+tests/integration/inventory
+github_action_key*
+.vscode/
+dfdf.json
+test-playbook.yml
