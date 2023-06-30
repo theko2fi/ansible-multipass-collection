@@ -174,3 +174,8 @@ EXAMPLES = '''
     name: "foo"
     state: absent
 '''
+
+RETURN = '''
+resultat:
+	description: return the VM info
+'''
