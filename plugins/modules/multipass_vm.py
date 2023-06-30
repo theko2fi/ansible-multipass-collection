@@ -87,13 +87,16 @@ module: multipass_vm
 author: Kenneth KOFFI (@theko2fi)
 short_description: Module to manage Multipass VM
 description:
-  - Manage the life cycle of Multipass virtual machines (create, start, stop, delete).
+  - Manage the life cycle of Multipass virtual machines (create, start, stop,
+    delete).
   - You might include instructions.
 options:
   name:
     description:
       - Name for the VM.
-      - If it is C('primary') (the configured primary instance name), the user's home directory is mounted inside the newly launched instance, in C('Home').
+      - If it is C('primary') (the configured primary instance name), the user's
+        home directory is mounted inside the newly launched instance, in
+        C('Home').
     required: yes
     type: str
   image:
@@ -150,32 +153,34 @@ options:
 '''
 
 EXAMPLES = '''
-- name: "Create a VM with default parameters"
+---
+- name: Create a VM with default parameters
   theko2fi.multipass.multipass_vm:
-    name: "foo"
+    name: foo
 
-- name: "Create a VM with custom specs"
+- name: Create a VM with custom specs
   theko2fi.multipass.multipass_vm:
-    name: "foo"
+    name: foo
     cpu: 2
     memory: 2G
     disk: 5G
 
-- name: "Recreate a VM"
+- name: Recreate a VM
   theko2fi.multipass.multipass_vm:
-    name: "foo"
+    name: foo
     cpu: 4
     memory: 2G
     disk: 10G
     recreate: true
-	
-- name: "Delete a VM"
+
+- name: Delete a VM
   theko2fi.multipass.multipass_vm:
-    name: "foo"
+    name: foo
     state: absent
 '''
 
 RETURN = '''
+---
 resultat:
-	description: return the VM info
+  description: return the VM info
 '''
