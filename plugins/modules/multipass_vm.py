@@ -147,7 +147,7 @@ options:
     default: false
 '''
 
-EXAMPLES='''
+EXAMPLES = '''
 - name: "Create a VM with default parameters"
   theko2fi.multipass.multipass_vm:
 		name: "foo"
