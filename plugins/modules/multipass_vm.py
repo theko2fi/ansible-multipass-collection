@@ -87,7 +87,7 @@ module: multipass_vm
 author: "Kenneth KOFFI (@theko2fi)"
 short_description: Module to manage Multipass VM
 description:
-  - Longer description of the module.
+  - Manage the life cycle of Multipass virtual machines (create, start, stop, delete).
   - You might include instructions.
 options:
   name:

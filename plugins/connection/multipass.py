@@ -184,7 +184,7 @@ DOCUMENTATION = '''
 author:
     - Kenneth KOFFI (@theko2fi)
 name: multipass
-short_description: Run tasks in multipass VMs
+short_description: Run tasks in multipass virtual machines
 description:
     - Run commands or put/fetch files to an existing multipass VM.
     - Uses the multipass CLI to execute commands in the virtual machine.
