@@ -146,3 +146,29 @@ options:
     type: bool
     default: false
 '''
+
+EXAMPLES='''
+- name: "Create a VM with default parameters"
+  theko2fi.multipass.multipass_vm:
+		name: "foo"
+
+- name: "Create a VM with custom specs"
+  theko2fi.multipass.multipass_vm:
+		name: "foo"
+		cpu: 2
+		memory: 2G
+		disk: 5G
+
+- name: "Recreate a VM"
+  theko2fi.multipass.multipass_vm:
+		name: "foo"
+		cpu: 4
+		memory: 2G
+		disk: 10G
+		recreate: true
+	
+- name: "Delete a VM"
+  theko2fi.multipass.multipass_vm:
+		name: "foo"
+		state: absent
+'''
