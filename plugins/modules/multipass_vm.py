@@ -30,6 +30,10 @@ def is_vm_running(vm_name: str):
 	vm_state = get_vm_state(vm_name=vm_name)
 	return vm_state == 'Running'
 
+def is_vm_stopped(vm_name: str):
+	vm_state = get_vm_state(vm_name=vm_name)
+	return vm_state == 'Stopped'
+
 
 def main():
 	module = AnsibleModule(
@@ -53,10 +57,13 @@ def main():
 	disk = module.params.get('disk')
 	cloud_init = module.params.get('cloud_init')
 
-	if state in ('present'):
+	if state in ('present', 'started'):
 		if not is_vm_exists(vm_name):
-			vm = multipassclient.launch(vm_name=vm_name, image=image, cpu=cpu, mem=memory, disk=disk, cloud_init=cloud_init)
-			module.exit_json(changed=True, resultat=vm.info())
+			try:
+				vm = multipassclient.launch(vm_name=vm_name, image=image, cpu=cpu, mem=memory, disk=disk, cloud_init=cloud_init)
+				module.exit_json(changed=True, resultat=vm.info())
+			except Exception as e:
+				module.fail_json(msg=str(e))
 		else:
 			vm = multipassclient.get_vm(vm_name=vm_name)
 			if module.params.get('recreate'):
@@ -64,8 +71,31 @@ def main():
 				multipassclient.purge()
 				vm = multipassclient.launch(vm_name=vm_name, image=image, cpu=cpu, mem=memory, disk=disk, cloud_init=cloud_init)
 				module.exit_json(changed=True, resultat=vm.info())
+			
+			# we do nothing if the VM is already running
+			if state == 'started' and is_vm_running(vm_name):
+				module.exit_json(changed=False, resultat=vm.info())
+			
+			# we start the VM if it was stopped
+			if state == 'started' and is_vm_stopped(vm_name):
+				try:
+					vm.start()
+					module.exit_json(changed=True, resultat=vm.info())
+				except Exception as e:
+					module.fail_json(msg=str(e))
+			
+			# we recover the VM and start it if it was deleted
+			if state == 'started' and is_vm_deleted(vm_name):
+				try:
+					multipassclient.recover(vm_name=vm_name)
+					vm.start()
+					module.exit_json(changed=True, resultat=vm.info())
+				except Exception as e:
+					module.fail_json(msg=str(e))
+			
+			# we do nothing if the VM is already present
 			module.exit_json(changed=False, resultat=vm.info())
-	if state in ('absent'):
+	if state in ('absent', 'stopped'):
 		if is_vm_deleted(vm_name=vm_name):
 			module.exit_json(changed=False)
 		else:
@@ -74,6 +104,8 @@ def main():
 				vm.delete()
 			except NameError:
 				module.exit_json(changed=False)
+			except Exception as e:
+				module.fail_json(msg=str(e))
 			module.exit_json(changed=True)
 
 
@@ -137,6 +169,9 @@ options:
         the provided configuration does not match, the instance will be updated,
         if it can be. If it cannot be updated, it will be removed and re-created
         with the requested config.
+      - 'V(started) - Asserts that the VM is first V(present), and then if the VM
+        is not running moves it to a running state. If the VM was deleted, it will
+        be recovered and started.'
     required: false
     type: str
     default: present
@@ -153,7 +188,6 @@ options:
 '''
 
 EXAMPLES = '''
----
 - name: Create a VM with default parameters
   theko2fi.multipass.multipass_vm:
     name: foo

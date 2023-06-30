@@ -44,3 +44,15 @@
   ansible.builtin.assert:
     that:
       - delete_vm.changed
+
+- name: Start a deleted VM
+  theko2fi.multipass.multipass_vm:
+    name: "zazilapus"
+    state: started
+  register: started_vm
+
+- name: Verify that VM has been been started
+  ansible.builtin.assert:
+    that:
+      - started_vm.changed
+      - started_vm.resultat.info.zazilapus.state == "Running"
