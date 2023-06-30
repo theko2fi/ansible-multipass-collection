@@ -84,7 +84,7 @@ if __name__ == "__main__":
 DOCUMENTATION = '''
 ---
 module: multipass_vm
-author: "Kenneth KOFFI (@theko2fi)"
+author: Kenneth KOFFI (@theko2fi)
 short_description: Module to manage Multipass VM
 description:
   - Manage the life cycle of Multipass virtual machines (create, start, stop, delete).
