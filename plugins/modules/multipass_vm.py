@@ -113,7 +113,7 @@ options:
       - Disk space to allocate to the VM in format C(<number>[<unit>]).
       - Positive integers, in bytes, or with V(K) (kibibyte, 1024B), V(M)
         (mebibyte), V(G) (gibibyte) suffix.
-      - Omitting the unit defaults to bytes.
+      - Omitting the unit defaults to bytes..
     required: false
     type: str
     default: 5G
