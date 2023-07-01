@@ -18,6 +18,29 @@
       - create_vm.resultat.info.zazilapus.memory.total|filesizeformat() == "2.1 GB"
       - create_vm.resultat.info.zazilapus.disks.sda1.total|filesizeformat() == "8.2 GB"
 
+- name: Stop multipass VM
+  theko2fi.multipass.multipass_vm:
+    name: "zazilapus"
+    state: stopped
+  register: stop_vm
+
+- name: Verify that VM has been stopped
+  ansible.builtin.assert:
+    that:
+      - stop_vm.changed
+
+- name: Start a multipass VM which was stopped
+  theko2fi.multipass.multipass_vm:
+    name: "zazilapus"
+    state: started
+  register: start_vm
+
+- name: Verify that VM has been started
+  ansible.builtin.assert:
+    that:
+      - start_vm.changed
+      - start_vm.resultat.info.zazilapus.state == "Running"
+
 - name: Recreate the multipass VM
   theko2fi.multipass.multipass_vm:
     name: "zazilapus"
@@ -44,6 +67,17 @@
   ansible.builtin.assert:
     that:
       - delete_vm.changed
+
+- name: Try to stop a deleted multipass VM to check idempotency
+  theko2fi.multipass.multipass_vm:
+    name: "zazilapus"
+    state: stopped
+  register: stop_vm
+
+- name: Verify that VM stop is idempotent
+  ansible.builtin.assert:
+    that:
+      - stop_vm.changed == False
 
 - name: Start a deleted VM
   theko2fi.multipass.multipass_vm:

@@ -100,9 +100,21 @@ def main():
 			module.exit_json(changed=False)
 		else:
 			vm = multipassclient.get_vm(vm_name=vm_name)
+			# we do nothing if the VM is already stopped
+			if state == 'stopped' and is_vm_stopped(vm_name=vm_name):
+				module.exit_json(changed=False)
+
+			# stop the VM if it's running
+			if state == 'stopped' and is_vm_running(vm_name=vm_name):
+				try:
+					vm.stop()
+					module.exit_json(changed=True)
+				except Exception as e:
+					module.fail_json(msg=str(e))
 			try:
 				vm.delete()
 			except NameError:
+				# we do nothing if the VM doesn't exist
 				module.exit_json(changed=False)
 			except Exception as e:
 				module.fail_json(msg=str(e))
@@ -172,6 +184,10 @@ options:
       - 'V(started) - Asserts that the VM is first V(present), and then if the VM
         is not running moves it to a running state. If the VM was deleted, it will
         be recovered and started.'
+      - 'V(stopped) - If an instance matching the specified name is running, moves
+        it to a stopped state.'
+      - Use the O(recreate) option to always force re-creation of a matching virtual
+        machine, even if it is running.
     required: false
     type: str
     default: present
