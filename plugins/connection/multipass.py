@@ -159,12 +159,23 @@ class Connection(ConnectionBase):
         if not os.path.exists(to_bytes(in_path, errors='surrogate_or_strict')):
             raise AnsibleFileNotFound("file or module does not exist: {0}".format(to_native(in_path)))
         try:
-            multipassclient.transfer(src=in_path, dest='{0}:{1}'.format(self.get_option('remote_addr'),out_path))
+            with open(in_path, 'rb') as filedata:
+                transfer_process = subprocess.Popen(
+                    ['multipass', 'transfer', '-', '{0}:{1}'.format(self.get_option('remote_addr'), out_path)],
+                    stdin=filedata,
+                    stdout=subprocess.PIPE
+                )
+                transfer_process.communicate()
 
         except shutil.Error:
             raise AnsibleError("failed to copy: {0} and {1} are the same".format(to_native(in_path), to_native(out_path)))
         except IOError as e:
             raise AnsibleError("failed to transfer file to {0}: {1}".format(to_native(out_path), to_native(e)))
+        except Exception as e:
+            raise AnsibleError("failed to transfer file {0} to {1}:{2}\nError: {3}".format(
+                to_native(in_path), to_native(self.get_option('remote_addr')), to_native(out_path), to_native(e)
+                )
+            )
 
     def fetch_file(self, in_path, out_path):
         ''' fetch a file from the multipass VM to local -- for compatibility '''
