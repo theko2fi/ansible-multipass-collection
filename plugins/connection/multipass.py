@@ -29,7 +29,7 @@ display = Display()
 class Connection(ConnectionBase):
     ''' Local based connections '''
 
-    transport = 'multipass'
+    transport = 'theko2fi.multipass.multipass'
     has_pipelining = True
 
     def __init__(self, *args, **kwargs):
@@ -55,7 +55,7 @@ class Connection(ConnectionBase):
 
         super(Connection, self).exec_command(cmd, in_data=in_data, sudoable=sudoable)
 
-        display.debug("in local.exec_command()")
+        display.debug("in multipass.exec_command()")
 
         executable = C.DEFAULT_EXECUTABLE.split()[0] if C.DEFAULT_EXECUTABLE else None
 
@@ -144,7 +144,7 @@ class Connection(ConnectionBase):
         if master:
             os.close(master)
 
-        display.debug("done with local.exec_command()")
+        display.debug("done with multipass.exec_command()")
         return (p.returncode, stdout, stderr)
 
     def put_file(self, in_path, out_path):
@@ -183,8 +183,8 @@ class Connection(ConnectionBase):
 DOCUMENTATION = '''
 author:
     - Kenneth KOFFI (@theko2fi)
-name: multipass
-short_description: Run tasks in multipass virtual machines
+name: theko2fi.multipass.multipass
+short_description: Run tasks in Multipass virtual machines
 description:
     - Run commands or put/fetch files to an existing multipass VM.
     - Uses the multipass CLI to execute commands in the virtual machine.
@@ -197,49 +197,4 @@ options:
             - name: inventory_hostname
             - name: ansible_host
             - name: ansible_multipass_host
-    remote_user:
-        description:
-            - The user to execute as inside the container.
-            - If multipass is too old to allow this (< 1.7), the one set by multipass itself will be used.
-        vars:
-            - name: ansible_user
-            - name: ansible_multipass_user
-        ini:
-            - section: defaults
-              key: remote_user
-        env:
-            - name: ANSIBLE_REMOTE_USER
-        cli:
-            - name: user
-        keyword:
-            - name: remote_user
-    multipass_extra_args:
-        description:
-            - Extra arguments to pass to the multipass command line.
-        default: ''
-        vars:
-            - name: ansible_multipass_extra_args
-        ini:
-            - section: multipass_connection
-              key: extra_cli_args
-    container_timeout:
-        default: 10
-        description:
-            - Controls how long we can wait to access reading output from the VM once execution started.
-        env:
-            - name: ANSIBLE_TIMEOUT
-            - name: ANSIBLE_MULTIPASS_TIMEOUT
-              version_added: 2.2.0
-        ini:
-            - key: timeout
-              section: defaults
-            - key: timeout
-              section: multipass_connection
-              version_added: 2.2.0
-        vars:
-          - name: ansible_multipass_timeout
-            version_added: 2.2.0
-        cli:
-          - name: timeout
-        type: integer
 '''
