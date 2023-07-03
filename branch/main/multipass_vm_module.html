@@ -216,6 +216,9 @@
 </div></td>
 <td><div class="ansible-option-cell"><p><code class="docutils literal notranslate"><span class="pre">absent</span></code> - An instance matching the specified name will be stopped and deleted.</p>
 <p><code class="docutils literal notranslate"><span class="pre">present</span></code> - Asserts the existence of an instance matching the name and any provided configuration parameters. If no instance matches the name, a virtual machine will be created. If an instance matches the name but the provided configuration does not match, the instance will be updated, if it can be. If it cannot be updated, it will be removed and re-created with the requested config.</p>
+<p><code class="ansible-value docutils literal notranslate"><span class="pre">started</span></code> - Asserts that the VM is first <code class="ansible-value docutils literal notranslate"><span class="pre">present</span></code>, and then if the VM is not running moves it to a running state. If the VM was deleted, it will be recovered and started.</p>
+<p><code class="ansible-value docutils literal notranslate"><span class="pre">stopped</span></code> - If an instance matching the specified name is running, moves it to a stopped state.</p>
+<p>Use the <code class="ansible-option docutils literal notranslate"><strong><a class="reference internal" href="#ansible-collections-theko2fi-multipass-multipass-vm-module-parameter-recreate"><span class="std std-ref"><span class="pre">recreate</span></span></a></strong></code> option to always force re-creation of a matching virtual machine, even if it is running.</p>
 <p class="ansible-option-line"><span class="ansible-option-choices">Choices:</span></p>
 <ul class="simple">
 <li><p><code class="ansible-option-default-bold docutils literal notranslate"><span class="pre">&quot;present&quot;</span></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
@@ -230,8 +233,7 @@
 </section>
 <section id="examples">
 <h2><a class="toc-backref" href="#id3" role="doc-backlink">Examples</a><a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
-<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create a VM with default parameters</span>
+<div class="highlight-yaml+jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Create a VM with default parameters</span>
 <span class="w">  </span><span class="nt">theko2fi.multipass.multipass_vm</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">foo</span>
 
