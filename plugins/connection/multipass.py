@@ -29,7 +29,7 @@ display = Display()
 class Connection(ConnectionBase):
     ''' Local based connections '''
 
-    transport = 'multipass'
+    transport = 'theko2fi.multipass.multipass'
     has_pipelining = True
 
     def __init__(self, *args, **kwargs):
@@ -55,7 +55,7 @@ class Connection(ConnectionBase):
 
         super(Connection, self).exec_command(cmd, in_data=in_data, sudoable=sudoable)
 
-        display.debug("in local.exec_command()")
+        display.debug("in multipass.exec_command()")
 
         executable = C.DEFAULT_EXECUTABLE.split()[0] if C.DEFAULT_EXECUTABLE else None
 
@@ -144,7 +144,7 @@ class Connection(ConnectionBase):
         if master:
             os.close(master)
 
-        display.debug("done with local.exec_command()")
+        display.debug("done with multipass.exec_command()")
         return (p.returncode, stdout, stderr)
 
     def put_file(self, in_path, out_path):
@@ -159,12 +159,23 @@ class Connection(ConnectionBase):
         if not os.path.exists(to_bytes(in_path, errors='surrogate_or_strict')):
             raise AnsibleFileNotFound("file or module does not exist: {0}".format(to_native(in_path)))
         try:
-            multipassclient.transfer(src=in_path, dest='{0}:{1}'.format(self.get_option('remote_addr'),out_path))
+            with open(in_path, 'rb') as filedata:
+                transfer_process = subprocess.Popen(
+                    ['multipass', 'transfer', '-', '{0}:{1}'.format(self.get_option('remote_addr'), out_path)],
+                    stdin=filedata,
+                    stdout=subprocess.PIPE
+                )
+                transfer_process.communicate()
 
         except shutil.Error:
             raise AnsibleError("failed to copy: {0} and {1} are the same".format(to_native(in_path), to_native(out_path)))
         except IOError as e:
             raise AnsibleError("failed to transfer file to {0}: {1}".format(to_native(out_path), to_native(e)))
+        except Exception as e:
+            raise AnsibleError("failed to transfer file {0} to {1}:{2}\nError: {3}".format(
+                to_native(in_path), to_native(self.get_option('remote_addr')), to_native(out_path), to_native(e)
+                )
+            )
 
     def fetch_file(self, in_path, out_path):
         ''' fetch a file from the multipass VM to local -- for compatibility '''
@@ -183,8 +194,8 @@ class Connection(ConnectionBase):
 DOCUMENTATION = '''
 author:
     - Kenneth KOFFI (@theko2fi)
-name: multipass
-short_description: Run tasks in multipass virtual machines
+name: theko2fi.multipass.multipass
+short_description: Run tasks in Multipass virtual machines
 description:
     - Run commands or put/fetch files to an existing multipass VM.
     - Uses the multipass CLI to execute commands in the virtual machine.
@@ -197,49 +208,4 @@ options:
             - name: inventory_hostname
             - name: ansible_host
             - name: ansible_multipass_host
-    remote_user:
-        description:
-            - The user to execute as inside the container.
-            - If multipass is too old to allow this (< 1.7), the one set by multipass itself will be used.
-        vars:
-            - name: ansible_user
-            - name: ansible_multipass_user
-        ini:
-            - section: defaults
-              key: remote_user
-        env:
-            - name: ANSIBLE_REMOTE_USER
-        cli:
-            - name: user
-        keyword:
-            - name: remote_user
-    multipass_extra_args:
-        description:
-            - Extra arguments to pass to the multipass command line.
-        default: ''
-        vars:
-            - name: ansible_multipass_extra_args
-        ini:
-            - section: multipass_connection
-              key: extra_cli_args
-    container_timeout:
-        default: 10
-        description:
-            - Controls how long we can wait to access reading output from the VM once execution started.
-        env:
-            - name: ANSIBLE_TIMEOUT
-            - name: ANSIBLE_MULTIPASS_TIMEOUT
-              version_added: 2.2.0
-        ini:
-            - key: timeout
-              section: defaults
-            - key: timeout
-              section: multipass_connection
-              version_added: 2.2.0
-        vars:
-          - name: ansible_multipass_timeout
-            version_added: 2.2.0
-        cli:
-          - name: timeout
-        type: integer
 '''
