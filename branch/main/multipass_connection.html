@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>theko2fi.multipass.multipass connection – Run tasks in multipass virtual machines &mdash; Theko2fi.Multipass Collection  documentation</title>
+  <title>theko2fi.multipass.multipass connection – Run tasks in Multipass virtual machines &mdash; Theko2fi.Multipass Collection  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/ansible.css" type="text/css" />
       <link rel="stylesheet" href="_static/antsibull-minimal.css" type="text/css" />
@@ -77,7 +77,7 @@
 <li class="toctree-l1"><a class="reference internal" href="multipass_vm_module.html">theko2fi.multipass.multipass_vm module – Module to manage Multipass VM</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">theko2fi.multipass.multipass connection – Run tasks in multipass virtual machines</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">theko2fi.multipass.multipass connection – Run tasks in Multipass virtual machines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#synopsis">Synopsis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#parameters">Parameters</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#authors">Authors</a></li>
@@ -103,7 +103,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">theko2fi.multipass.multipass connection – Run tasks in multipass virtual machines</li>
+      <li class="breadcrumb-item active">theko2fi.multipass.multipass connection – Run tasks in Multipass virtual machines</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -115,7 +115,7 @@
            <div itemprop="articleBody">
              
   <span class="target" id="ansible-collections-theko2fi-multipass-multipass-connection"></span><section id="theko2fi-multipass-multipass-connection-run-tasks-in-multipass-virtual-machines">
-<h1>theko2fi.multipass.multipass connection – Run tasks in multipass virtual machines<a class="headerlink" href="#theko2fi-multipass-multipass-connection-run-tasks-in-multipass-virtual-machines" title="Permalink to this heading"></a></h1>
+<h1>theko2fi.multipass.multipass connection – Run tasks in Multipass virtual machines<a class="headerlink" href="#theko2fi-multipass-multipass-connection-run-tasks-in-multipass-virtual-machines" title="Permalink to this heading"></a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This connection plugin is part of the <a class="reference external" href="https://galaxy.ansible.com/theko2fi/multipass">theko2fi.multipass collection</a> (version 0.1.0).</p>
@@ -145,54 +145,6 @@
 </thead>
 <tbody>
 <tr class="row-even"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-container_timeout"></div><p class="ansible-option-title" id="ansible-collections-theko2fi-multipass-multipass-connection-parameter-container-timeout"><strong>container_timeout</strong></p>
-<a class="ansibleOptionLink" href="#parameter-container_timeout" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">integer</span></p>
-</div></td>
-<td><div class="ansible-option-cell"><p>Controls how long we can wait to access reading output from the VM once execution started.</p>
-<p class="ansible-option-line"><span class="ansible-option-default-bold">Default:</span> <code class="ansible-option-default docutils literal notranslate"><span class="pre">10</span></code></p>
-<p class="ansible-option-line"><span class="ansible-option-configuration">Configuration:</span></p>
-<ul>
-<li><p>INI entries:</p>
-<div class="highlight-YAML+Jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">[</span><span class="nv">defaults</span><span class="p p-Indicator">]</span>
-<span class="l l-Scalar l-Scalar-Plain">timeout = 10</span>
-</pre></div>
-</div>
-<div class="highlight-YAML+Jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">[</span><span class="nv">multipass_connection</span><span class="p p-Indicator">]</span>
-<span class="l l-Scalar l-Scalar-Plain">timeout = 10</span>
-</pre></div>
-</div>
-<p><span class="ansible-option-versionadded">added in theko2fi.multipass 2.2.0</span></p>
-</li>
-<li><p>Environment variable: <span class="target" id="index-0"></span><a class="reference external" href="https://docs.ansible.com/ansible/devel/reference_appendices/config.html#envvar-ANSIBLE_TIMEOUT" title="(in Ansible vdevel)"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">ANSIBLE_TIMEOUT</span></code></a></p></li>
-<li><p>Environment variable: <span class="target" id="index-1"></span><a class="reference internal" href="environment_variables.html#envvar-ANSIBLE_MULTIPASS_TIMEOUT"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">ANSIBLE_MULTIPASS_TIMEOUT</span></code></a></p>
-<p><span class="ansible-option-versionadded">added in theko2fi.multipass 2.2.0</span></p>
-</li>
-<li><p>Variable: ansible_multipass_timeout</p>
-<p><span class="ansible-option-versionadded">added in theko2fi.multipass 2.2.0</span></p>
-</li>
-<li><p>CLI argument: –timeout</p></li>
-</ul>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-multipass_extra_args"></div><p class="ansible-option-title" id="ansible-collections-theko2fi-multipass-multipass-connection-parameter-multipass-extra-args"><strong>multipass_extra_args</strong></p>
-<a class="ansibleOptionLink" href="#parameter-multipass_extra_args" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-cell"><p>Extra arguments to pass to the multipass command line.</p>
-<p class="ansible-option-line"><span class="ansible-option-default-bold">Default:</span> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p>
-<p class="ansible-option-line"><span class="ansible-option-configuration">Configuration:</span></p>
-<ul>
-<li><p>INI entry:</p>
-<div class="highlight-YAML+Jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">[</span><span class="nv">multipass_connection</span><span class="p p-Indicator">]</span>
-<span class="l l-Scalar l-Scalar-Plain">extra_cli_args = &quot;&quot;</span>
-</pre></div>
-</div>
-</li>
-<li><p>Variable: ansible_multipass_extra_args</p></li>
-</ul>
-</div></td>
-</tr>
-<tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="parameter-remote_addr"></div><p class="ansible-option-title" id="ansible-collections-theko2fi-multipass-multipass-connection-parameter-remote-addr"><strong>remote_addr</strong></p>
 <a class="ansibleOptionLink" href="#parameter-remote_addr" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
 </div></td>
@@ -203,28 +155,6 @@
 <li><p>Variable: inventory_hostname</p></li>
 <li><p>Variable: ansible_host</p></li>
 <li><p>Variable: ansible_multipass_host</p></li>
-</ul>
-</div></td>
-</tr>
-<tr class="row-odd"><td><div class="ansible-option-cell">
-<div class="ansibleOptionAnchor" id="parameter-remote_user"></div><p class="ansible-option-title" id="ansible-collections-theko2fi-multipass-multipass-connection-parameter-remote-user"><strong>remote_user</strong></p>
-<a class="ansibleOptionLink" href="#parameter-remote_user" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
-</div></td>
-<td><div class="ansible-option-cell"><p>The user to execute as inside the container.</p>
-<p>If multipass is too old to allow this (&lt; 1.7), the one set by multipass itself will be used.</p>
-<p class="ansible-option-line"><span class="ansible-option-configuration">Configuration:</span></p>
-<ul>
-<li><p>INI entry:</p>
-<div class="highlight-YAML+Jinja notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">[</span><span class="nv">defaults</span><span class="p p-Indicator">]</span>
-<span class="l l-Scalar l-Scalar-Plain">remote_user = VALUE</span>
-</pre></div>
-</div>
-</li>
-<li><p>Environment variable: <span class="target" id="index-2"></span><a class="reference external" href="https://docs.ansible.com/ansible/devel/reference_appendices/config.html#envvar-ANSIBLE_REMOTE_USER" title="(in Ansible vdevel)"><code class="xref std std-envvar docutils literal notranslate"><span class="pre">ANSIBLE_REMOTE_USER</span></code></a></p></li>
-<li><p>Variable: ansible_user</p></li>
-<li><p>Variable: ansible_multipass_user</p></li>
-<li><p>Keyword: remote_user</p></li>
-<li><p>CLI argument: –user</p></li>
 </ul>
 </div></td>
 </tr>
