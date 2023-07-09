@@ -36,7 +36,8 @@ class Connection(ConnectionBase):
 
         super(Connection, self).__init__(*args, **kwargs)
         self.cwd = None
-        self.default_user = getpass.getuser()
+        #self.default_user = getpass.getuser()
+        self.default_user = "ubuntu"
 
     def _connect(self):
         ''' connect to the multipass VM; nothing to do here '''
@@ -181,9 +182,23 @@ class Connection(ConnectionBase):
         ''' fetch a file from the multipass VM to local -- for compatibility '''
 
         super(Connection, self).fetch_file(in_path, out_path)
+        
+        #in_path = unfrackpath(in_path, basedir=self.cwd)
+        #out_path = unfrackpath(out_path, basedir=self.cwd)
 
-        display.vvv(u"FETCH {0} TO {1}".format(in_path, out_path), host=self._play_context.remote_addr)
-        self.put_file(in_path, out_path)
+        display.vvv("local src is: {}".format(out_path), host=self._play_context.remote_addr)
+
+        display.vvv(u"FETCH {0}:{1} TO {2}".format(self.get_option('remote_addr'), in_path, out_path), host=self._play_context.remote_addr)
+
+        try:
+            cat_returncode, cat_stdout, cat_stderr = self.exec_command(cmd='cat {0}'.format(in_path))
+            with open(out_path, 'wb') as filedata:
+                filedata.write(cat_stdout)
+        except Exception as e:
+            raise AnsibleError("failed to transfer file {0}:{1} to {2}\nError: {3}".format(
+                to_native(self.get_option('remote_addr')), to_native(in_path) , to_native(out_path), to_native(e)
+                )
+            )
 
     def close(self):
         ''' terminate the connection; nothing to do here '''
