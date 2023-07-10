@@ -90,3 +90,27 @@
     that:
       - started_vm.changed
       - started_vm.result.info.zazilapus.state == "Running"
+
+- name: Delete and purge a VM
+  theko2fi.multipass.multipass_vm:
+    name: "zazilapus"
+    state: absent
+    purge: true
+  register: purge_vm
+
+- name: Verify that VM has been purged
+  ansible.builtin.assert:
+    that:
+      - purge_vm.changed
+
+- name: Delete and purge a VM (check idempotency)
+  theko2fi.multipass.multipass_vm:
+    name: "zazilapus"
+    state: absent
+    purge: true
+  register: repurge_vm
+
+- name: Verify that VM purge is idempotent 
+  ansible.builtin.assert:
+    that:
+      - repurge_vm.changed == False
