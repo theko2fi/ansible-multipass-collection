@@ -13,10 +13,10 @@
   ansible.builtin.assert:
     that:
       - create_vm.changed
-      - create_vm.resultat.info.zazilapus.state == "Running"
-      - create_vm.resultat.info.zazilapus.cpu_count == "2"
-      - create_vm.resultat.info.zazilapus.memory.total|filesizeformat() == "2.1 GB"
-      - create_vm.resultat.info.zazilapus.disks.sda1.total|filesizeformat() == "8.2 GB"
+      - create_vm.result.info.zazilapus.state == "Running"
+      - create_vm.result.info.zazilapus.cpu_count == "2"
+      - create_vm.result.info.zazilapus.memory.total|filesizeformat() == "2.1 GB"
+      - create_vm.result.info.zazilapus.disks.sda1.total|filesizeformat() == "8.2 GB"
 
 - name: Stop multipass VM
   theko2fi.multipass.multipass_vm:
@@ -39,7 +39,7 @@
   ansible.builtin.assert:
     that:
       - start_vm.changed
-      - start_vm.resultat.info.zazilapus.state == "Running"
+      - start_vm.result.info.zazilapus.state == "Running"
 
 - name: Recreate the multipass VM
   theko2fi.multipass.multipass_vm:
@@ -52,10 +52,10 @@
   ansible.builtin.assert:
     that:
       - recreate_vm.changed
-      - recreate_vm.resultat.info.zazilapus.state == "Running"
-      - recreate_vm.resultat.info.zazilapus.cpu_count == "1"
-      - recreate_vm.resultat.info.zazilapus.memory.total|filesizeformat() == "998.1 MB"
-      - recreate_vm.resultat.info.zazilapus.disks.sda1.total|filesizeformat() == "5.1 GB"
+      - recreate_vm.result.info.zazilapus.state == "Running"
+      - recreate_vm.result.info.zazilapus.cpu_count == "1"
+      - recreate_vm.result.info.zazilapus.memory.total|filesizeformat() == "998.1 MB"
+      - recreate_vm.result.info.zazilapus.disks.sda1.total|filesizeformat() == "5.1 GB"
 
 - name: Delete the multipass VM
   theko2fi.multipass.multipass_vm:
@@ -89,4 +89,4 @@
   ansible.builtin.assert:
     that:
       - started_vm.changed
-      - started_vm.resultat.info.zazilapus.state == "Running"
+      - started_vm.result.info.zazilapus.state == "Running"
