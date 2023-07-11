@@ -63,66 +63,59 @@ def main():
 	purge = module.params.get('purge')
 
 	if state in ('present', 'started'):
-		if not is_vm_exists(vm_name):
-			try:
+		try:
+			if not is_vm_exists(vm_name):
 				vm = multipassclient.launch(vm_name=vm_name, image=image, cpu=cpu, mem=memory, disk=disk, cloud_init=cloud_init)
 				module.exit_json(changed=True, result=vm.info())
-			except Exception as e:
-				module.fail_json(msg=str(e))
-		else:
-			vm = multipassclient.get_vm(vm_name=vm_name)
-			if module.params.get('recreate'):
-				vm.delete(purge=True)
-				vm = multipassclient.launch(vm_name=vm_name, image=image, cpu=cpu, mem=memory, disk=disk, cloud_init=cloud_init)
-				module.exit_json(changed=True, result=vm.info())
-			
-			# we do nothing if the VM is already running
-			if state == 'started' and is_vm_running(vm_name):
-				module.exit_json(changed=False, result=vm.info())
-			
-			# we start the VM if it was stopped
-			if state == 'started' and is_vm_stopped(vm_name):
-				try:
-					vm.start()
+			else:
+				vm = multipassclient.get_vm(vm_name=vm_name)
+				if module.params.get('recreate'):
+					vm.delete(purge=True)
+					vm = multipassclient.launch(vm_name=vm_name, image=image, cpu=cpu, mem=memory, disk=disk, cloud_init=cloud_init)
 					module.exit_json(changed=True, result=vm.info())
-				except Exception as e:
-					module.fail_json(msg=str(e))
-			
-			# we recover the VM and start it if it was deleted
-			if state == 'started' and is_vm_deleted(vm_name):
-				try:
-					multipassclient.recover(vm_name=vm_name)
-					vm.start()
-					module.exit_json(changed=True, result=vm.info())
-				except Exception as e:
-					module.fail_json(msg=str(e))
-			
-			# we do nothing if the VM is already present
-			module.exit_json(changed=False, result=vm.info())
-	if state in ('absent', 'stopped'):
-		if is_vm_deleted(vm_name=vm_name):
-			module.exit_json(changed=False)
-		else:
-			vm = multipassclient.get_vm(vm_name=vm_name)
-			# we do nothing if the VM is already stopped
-			if state == 'stopped' and is_vm_stopped(vm_name=vm_name):
-				module.exit_json(changed=False)
 
-			# stop the VM if it's running
-			if state == 'stopped' and is_vm_running(vm_name=vm_name):
-				try:
-					vm.stop()
-					module.exit_json(changed=True)
-				except Exception as e:
-					module.fail_json(msg=str(e))
-			try:
-				vm.delete(purge=purge)
-			except NameError:
-				# we do nothing if the VM doesn't exist
+				if state == 'started':
+					# we do nothing if the VM is already running
+					if is_vm_running(vm_name):
+						module.exit_json(changed=False, result=vm.info())
+					else:
+						# we recover the VM if it was deleted
+						if is_vm_deleted(vm_name):
+							multipassclient.recover(vm_name=vm_name)
+						# We start the VM if it isn't running
+						vm.start()
+						module.exit_json(changed=True, result=vm.info())
+
+				# we do nothing if the VM is already present
+				module.exit_json(changed=False, result=vm.info())
+		except Exception as e:
+			module.fail_json(msg=str(e))
+
+	if state in ('absent', 'stopped'):
+		try:
+			if is_vm_deleted(vm_name=vm_name):
 				module.exit_json(changed=False)
-			except Exception as e:
-				module.fail_json(msg=str(e))
-			module.exit_json(changed=True)
+			else:
+				vm = multipassclient.get_vm(vm_name=vm_name)
+
+				if state == 'stopped':
+					# we do nothing if the VM is already stopped
+					if is_vm_stopped(vm_name=vm_name):
+						module.exit_json(changed=False)
+					else:
+						# stop the VM if it's running
+						vm.stop()
+						module.exit_json(changed=True)
+
+				try:
+					vm.delete(purge=purge)
+					module.exit_json(changed=True)
+				except NameError:
+					# we do nothing if the VM doesn't exist
+					module.exit_json(changed=False)
+		except Exception as e:
+			module.fail_json(msg=str(e))
+			
 
 
 if __name__ == "__main__":
