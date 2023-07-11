@@ -223,6 +223,16 @@ EXAMPLES = '''
     memory: 2G
     disk: 5G
 
+- name: Stop a VM
+  theko2fi.multipass.multipass_vm:
+    name: foo
+    state: stopped
+
+- name: Start a VM
+  theko2fi.multipass.multipass_vm:
+    name: foo
+    state: started
+
 - name: Recreate a VM
   theko2fi.multipass.multipass_vm:
     name: foo
