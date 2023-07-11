@@ -130,7 +130,6 @@ short_description: Module to manage Multipass VM
 description:
   - Manage the life cycle of Multipass virtual machines (create, start, stop,
     delete).
-  - You might include instructions.
 options:
   name:
     description:
@@ -195,10 +194,14 @@ options:
     type: bool
     default: false
   recreate:
-    description: Use with C(present) and C(started) states to force the re-creation
+    description: Use with O(state=present) or O(state=started) to force the re-creation
       of an existing virtual machine.
     type: bool
     default: false
+
+requirements:
+  - Multipass python SDK
+    U(https://github.com/theko2fi/ansible-multipass-collection#external-requirements)
 '''
 
 EXAMPLES = '''
