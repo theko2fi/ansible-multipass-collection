@@ -181,10 +181,7 @@ options:
         deleted.
       - C(present) - Asserts the existence of an instance matching the name and
         any provided configuration parameters. If no instance matches the name,
-        a virtual machine will be created. If an instance matches the name but
-        the provided configuration does not match, the instance will be updated,
-        if it can be. If it cannot be updated, it will be removed and re-created
-        with the requested config.
+        a virtual machine will be created.
       - 'V(started) - Asserts that the VM is first V(present), and then if the VM
         is not running moves it to a running state. If the VM was deleted, it will
         be recovered and started.'
