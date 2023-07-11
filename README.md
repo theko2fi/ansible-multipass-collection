@@ -10,13 +10,23 @@ This repo contains the `theko2fi.multipass` Ansible Collection. The collection i
 
 Please note that this collection is **not** developed by [Canonical](https://canonical.com/) team. Therefore, it's an UNOFFICIAL collection.
 
-## External requirements
+## Included content
 
-Most modules and plugins require the Multipass python SDK which can be installed as follow:
+* Connection plugins:
+    - [multipass](https://theko2fi.github.io/ansible-multipass-collection/branch/main/multipass_connection.html) - Run tasks in Multipass virtual machines
+* Modules:
+    - [multipass_vm](https://theko2fi.github.io/ansible-multipass-collection/branch/main/multipass_vm_module.html) - Module to manage Multipass virtual machines
+
+## Installation
+
+### External requirements
+
+Most modules and plugins of this collection require the Multipass python SDK which can be installed as follows:
 
 ```bash
 pip install git+https://github.com/theko2fi/multipass-python-sdk.git
 ```
+> Note: It's important to install the SDK using the command above because the version available on PyPI isn't up-to-date.
 
 If you already have another version of the SDK, you can force the reinstallation as below:
 
@@ -24,14 +34,9 @@ If you already have another version of the SDK, you can force the reinstallation
 pip install --force-reinstall git+https://github.com/theko2fi/multipass-python-sdk.git
 ```
 
-## Collection Documentation
+### Installing the Collection from Ansible Galaxy
 
-The full documentation can be found at https://theko2fi.github.io/ansible-multipass-collection/branch/main/.
-Please check it out.
-
-## Using this collection
-
-Before using the Docker community collection, you need to install the collection with the `ansible-galaxy` CLI:
+Before using the Multipass collection, you need to install the collection with the `ansible-galaxy` CLI:
 
 ```bash
 ansible-galaxy collection install theko2fi.multipass
@@ -45,6 +50,43 @@ collections:
 ```
 
 See [Ansible Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.
+
+## Usage
+
+It's preferable to use content in this collection using their Fully Qualified Collection Namespace (FQCN), for example `theko2fi.multipass.multipass_vm`. The sample playbook below will create a Multipass VM and test the connection to it.
+
+```yaml
+---
+- name: Prepare
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Create a Multipass VM
+      theko2fi.multipass.multipass_vm:
+        name: foo
+        cpu: 2
+        memory: 2G
+        disk: 8G
+        state: started
+    - name: Add the VM to the inventory
+      ansible.builtin.add_host:
+        name: foo
+        ansible_host: foo
+        ansible_connection: theko2fi.multipass.multipass
+        ansible_python_interpreter: '/usr/bin/python3'
+
+- name: Run a play against the multipass VM
+  hosts: foo
+  tasks:
+    - name: Ping
+      ansible.builtin.ping:
+```
+
+## Collection Documentation
+
+The full documentation can be found at https://theko2fi.github.io/ansible-multipass-collection/branch/main/.
+
+Please check it out.
 
 ## Contributing to this collection
 
