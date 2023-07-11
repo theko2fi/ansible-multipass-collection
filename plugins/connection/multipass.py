@@ -214,6 +214,10 @@ short_description: Run tasks in Multipass virtual machines
 description:
     - Run commands or put/fetch files to an existing multipass VM.
     - Uses the multipass CLI to execute commands in the virtual machine.
+notes:
+    - The C(theko2fi.multipass.multipass) connection plugin does not support using
+      the ``remote_user`` and ``ansible_user`` variables to configure the remote
+      user. Remote commands will often default to running as ``ubuntu`` user.
 options:
     remote_addr:
         description:
@@ -223,4 +227,17 @@ options:
             - name: inventory_hostname
             - name: ansible_host
             - name: ansible_multipass_host
+'''
+
+EXAMPLES = '''
+# sample inventory.yml file where `foo` is the name of the Multipass VM:
+all:
+  hosts:
+    foo:
+      ansible_host: foo
+      ansible_connection: theko2fi.multipass.multipass
+      ansible_python_interpreter: /usr/bin/python3
+
+# Execution: ansible-playbook -i inventory.yml playbook.yml
+# The playbook tasks will get executed on the multipass VM
 '''
