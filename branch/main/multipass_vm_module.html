@@ -21,7 +21,7 @@
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="theko2fi.multipass.multipass connection – Run tasks in Multipass virtual machines" href="multipass_connection.html" />
+    <link rel="next" title="theko2fi.multipass.multipass_vm_info module – Retrieves facts about Multipass virtual machine" href="multipass_vm_info_module.html" />
     <link rel="prev" title="Theko2Fi.Multipass" href="index.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
 
 
@@ -87,6 +87,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="multipass_vm_info_module.html">theko2fi.multipass.multipass_vm_info module – Retrieves facts about Multipass virtual machine</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="multipass_connection.html">theko2fi.multipass.multipass connection – Run tasks in Multipass virtual machines</a></li>
@@ -309,10 +310,13 @@ see <a class="reference internal" href="#ansible-collections-theko2fi-multipass-
 <tbody>
 <tr class="row-even"><td><div class="ansible-option-cell">
 <div class="ansibleOptionAnchor" id="return-result"></div><p class="ansible-option-title" id="ansible-collections-theko2fi-multipass-multipass-vm-module-return-result"><strong>result</strong></p>
-<a class="ansibleOptionLink" href="#return-result" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+<a class="ansibleOptionLink" href="#return-result" title="Permalink to this return value"></a><p class="ansible-option-type-line"><span class="ansible-option-type">dictionary</span></p>
 </div></td>
-<td><div class="ansible-option-cell"><p>return the VM info</p>
-<p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> success</p>
+<td><div class="ansible-option-cell"><p>Facts representing the current state of the virtual machine. Matches the multipass info output.</p>
+<p>Empty if <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-theko2fi-multipass-multipass-vm-module-parameter-state"><span class="std std-ref"><span class="pre">state=absent</span></span></a></code> or <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-theko2fi-multipass-multipass-vm-module-parameter-state"><span class="std std-ref"><span class="pre">state=stopped</span></span></a></code>.</p>
+<p>Will be <code class="ansible-value docutils literal notranslate"><span class="pre">none</span></code> if virtual machine does not exist.</p>
+<p class="ansible-option-line"><span class="ansible-option-returned-bold">Returned:</span> success; or when <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-theko2fi-multipass-multipass-vm-module-parameter-state"><span class="std std-ref"><span class="pre">state=started</span></span></a></code> or <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-theko2fi-multipass-multipass-vm-module-parameter-state"><span class="std std-ref"><span class="pre">state=present</span></span></a></code>, and when waiting for the VM result did not fail</p>
+<p class="ansible-option-line ansible-option-sample"><span class="ansible-option-sample-bold">Sample:</span> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">{&quot;errors&quot;:</span> <span class="pre">[],</span> <span class="pre">&quot;info&quot;:</span> <span class="pre">{&quot;foo&quot;:</span> <span class="pre">{&quot;cpu_count&quot;:</span> <span class="pre">&quot;1&quot;,</span> <span class="pre">&quot;disks&quot;:</span> <span class="pre">{&quot;sda1&quot;:</span> <span class="pre">{&quot;total&quot;:</span> <span class="pre">&quot;5120710656&quot;,</span> <span class="pre">&quot;used&quot;:</span> <span class="pre">&quot;2200540672&quot;}},</span> <span class="pre">&quot;image_hash&quot;:</span> <span class="pre">&quot;fe102bfb3d3d917d31068dd9a4bd8fcaeb1f529edda86783f8524fdc1477ee29&quot;,</span> <span class="pre">&quot;image_release&quot;:</span> <span class="pre">&quot;22.04</span> <span class="pre">LTS&quot;,</span> <span class="pre">&quot;ipv4&quot;:</span> <span class="pre">[&quot;172.23.240.92&quot;],</span> <span class="pre">&quot;load&quot;:</span> <span class="pre">[0.01,</span> <span class="pre">0.01,</span> <span class="pre">0],</span> <span class="pre">&quot;memory&quot;:</span> <span class="pre">{&quot;total&quot;:</span> <span class="pre">935444480,</span> <span class="pre">&quot;used&quot;:</span> <span class="pre">199258112},</span> <span class="pre">&quot;mounts&quot;:</span> <span class="pre">{},</span> <span class="pre">&quot;release&quot;:</span> <span class="pre">&quot;Ubuntu</span> <span class="pre">22.04.2</span> <span class="pre">LTS&quot;,</span> <span class="pre">&quot;state&quot;:</span> <span class="pre">&quot;Running&quot;}}}</span></code></p>
 </div></td>
 </tr>
 </tbody>
@@ -339,7 +343,7 @@ see <a class="reference internal" href="#ansible-collections-theko2fi-multipass-
 
 <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="Theko2Fi.Multipass" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="multipass_connection.html" class="btn btn-neutral float-right" title="theko2fi.multipass.multipass connection – Run tasks in Multipass virtual machines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="multipass_vm_info_module.html" class="btn btn-neutral float-right" title="theko2fi.multipass.multipass_vm_info module – Retrieves facts about Multipass virtual machine" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
