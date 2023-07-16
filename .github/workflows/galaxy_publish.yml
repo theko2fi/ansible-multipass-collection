@@ -22,5 +22,5 @@ jobs:
       - name: publish to ansible galaxy
         uses: artis3n/ansible_galaxy_collection@v2
         with:
-          api_key: ${{ secrets.GALAXI_API_KEY }}
+          api_key: '${{ secrets.GALAXI_API_KEY }}'
           galaxy_version: '${{ env.RELEASE_VERSION }}'
