@@ -15,8 +15,10 @@ def is_vm_exists(vm_name):
 	try:
 		vm_local.info()
 		return True
-	except Exception as e:
+	except NameError:
 		return False
+	except Exception as e:
+		raise AnsibleError(str(e))
 	
 def get_vm_state(vm_name: str):
 	if is_vm_exists(vm_name=vm_name):
@@ -93,7 +95,7 @@ def main():
 
 	if state in ('absent', 'stopped'):
 		try:
-			if is_vm_deleted(vm_name=vm_name):
+			if not is_vm_exists(vm_name=vm_name):
 				module.exit_json(changed=False)
 			else:
 				vm = multipassclient.get_vm(vm_name=vm_name)
@@ -101,6 +103,8 @@ def main():
 				if state == 'stopped':
 					# we do nothing if the VM is already stopped
 					if is_vm_stopped(vm_name=vm_name):
+						module.exit_json(changed=False)
+					elif is_vm_deleted(vm_name=vm_name):
 						module.exit_json(changed=False)
 					else:
 						# stop the VM if it's running
@@ -250,4 +254,46 @@ RETURN = '''
 ---
 result:
   description: return the VM info
+'''
+
+RETURN = ''' 
+result:
+    description:
+      - Facts representing the current state of the virtual machine. Matches the multipass info output.
+      - Empty if O(state=absent) or O(state=stopped).
+      - Will be V(none) if virtual machine does not exist.
+    returned: success; or when O(state=started) or O(started=present), and when waiting for the VM result did not fail
+    type: dict
+    sample: '{
+    "errors": [],
+    "info": {
+        "foo": {
+            "cpu_count": "1",
+            "disks": {
+                "sda1": {
+                    "total": "5120710656",
+                    "used": "2200540672"
+                }
+            },
+            "image_hash": "fe102bfb3d3d917d31068dd9a4bd8fcaeb1f529edda86783f8524fdc1477ee29",
+            "image_release": "22.04 LTS",
+            "ipv4": [
+                "172.23.240.92"
+            ],
+            "load": [
+                0.01,
+                0.01,
+                0
+            ],
+            "memory": {
+                "total": 935444480,
+                "used": 199258112
+            },
+            "mounts": {
+            },
+            "release": "Ubuntu 22.04.2 LTS",
+            "state": "Running"
+          }
+        }
+      }'
 '''

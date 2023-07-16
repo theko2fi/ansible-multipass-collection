@@ -1,0 +1,51 @@
+---
+# Copyright 2023 Kenneth KOFFI <@theko2fi>
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+####################################################################
+# WARNING: These are designed specifically for Ansible tests       #
+# and should not be used as examples of how to write Ansible roles #
+####################################################################
+
+- block:
+  - name: Create random VM name
+    set_fact:
+      cname: "{{ 'ansible-multipass-test-%0x' % ((2**32) | random) }}"
+
+  - name: Make sure VM is not there
+    theko2fi.multipass.multipass_vm:
+      name: "{{ cname }}"
+      state: absent
+      purge: true
+
+  - name: Inspect a non-present VM
+    theko2fi.multipass.multipass_vm_info:
+      name: "{{ cname }}"
+    register: output
+
+  - assert:
+      that:
+      - "not output.exists"
+      - "'result' in output"
+      - "output.result is none"
+
+  - name: Make sure VM exists
+    theko2fi.multipass.multipass_vm:
+      name: "{{ cname }}"
+      state: started
+      recreate: true
+
+  - name: Inspect a present VM
+    theko2fi.multipass.multipass_vm_info:
+      name: "{{ cname }}"
+    register: output
+  - name: Dump multipass_vm_info output
+    debug: var=output
+  
+  always:
+  - name: Cleanup
+    theko2fi.multipass.multipass_vm:
+      name: "{{ cname }}"
+      state: absent
+      purge: true
