@@ -262,7 +262,7 @@ result:
       - Facts representing the current state of the virtual machine. Matches the multipass info output.
       - Empty if O(state=absent) or O(state=stopped).
       - Will be V(none) if virtual machine does not exist.
-    returned: success; or when O(state=started) or O(started=present), and when waiting for the VM result did not fail
+    returned: success; or when O(state=started) or O(state=present), and when waiting for the VM result did not fail
     type: dict
     sample: '{
     "errors": [],
