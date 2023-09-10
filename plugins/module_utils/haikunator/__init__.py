@@ -1,0 +1,1 @@
+from .haikunator import Haikunator

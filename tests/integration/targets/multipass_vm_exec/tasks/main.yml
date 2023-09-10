@@ -1,0 +1,105 @@
+---
+# Copyright (c) Kenneth KOFFI
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+####################################################################
+# WARNING: These are designed specifically for Ansible tests       #
+# and should not be used as examples of how to write Ansible roles #
+####################################################################
+
+- block:
+  - name: Create random VM name
+    set_fact:
+      vname: "{{ 'ansible-multipass-test-%0x' % ((2**32) | random) }}"
+
+  - name: Make sure VM is not there
+    theko2fi.multipass.multipass_vm:
+      name: "{{ vname }}"
+      state: absent
+      purge: true
+
+  - name: Execute in a non-present virtual machine
+    theko2fi.multipass.multipass_vm_exec:
+      name: "{{ vname }}"
+      command: "/bin/bash -c 'ls -a'"
+    register: result
+    ignore_errors: true
+
+  - assert:
+      that:
+        - result is failed
+        #- "'instance does not exist' in result.msg"
+
+  - name: Make sure VM exists
+    theko2fi.multipass.multipass_vm:
+      name: "{{ vname }}"
+      state: started
+      recreate: true
+
+  - name: Execute in a present VM (command)
+    theko2fi.multipass.multipass_vm_exec:
+      name: "{{ vname }}"
+      command: "/bin/sh -c 'ls -a'"
+    register: result_cmd
+
+  - name: Print stdout
+    ansible.builtin.debug:
+      var: result_cmd.stdout_lines
+
+  - assert:
+      that:
+        - "'stdout' in result_cmd"
+        - "'stdout_lines' in result_cmd"
+        - "'stderr' in result_cmd"
+        - "'stderr_lines' in result_cmd"
+        - result_cmd.stdout_lines | length > 0
+
+  - name: Execute in a present VM and change working directory
+    theko2fi.multipass.multipass_vm_exec:
+      name: "{{ vname }}"
+      command: "ls -a"
+      workdir: "/tmp"
+    register: result_cmd
+
+  - name: Print stdout
+    ansible.builtin.debug:
+      var: result_cmd.stdout_lines
+
+  - assert:
+      that:
+        - "'stdout' in result_cmd"
+        - "'stdout_lines' in result_cmd"
+        - "'stderr' in result_cmd"
+        - "'stderr_lines' in result_cmd"
+        - result_cmd.stderr == ''
+        - result_cmd.stderr_lines == []
+        - result_cmd.stdout_lines | length > 0
+
+  - name: Run a simple command
+    theko2fi.multipass.multipass_vm_exec:
+      name: "{{ vname }}"
+      command: /bin/bash -c "echo Hello World && echo Hello World! > /dev/stderr"
+    register: result
+
+  - name: Print stderr lines
+    ansible.builtin.debug:
+      var: result.stdout
+
+  - assert:
+      that:
+        - "'stdout' in result_cmd"
+        - "'stdout_lines' in result_cmd"
+        - "'stderr' in result_cmd"
+        - "'stderr_lines' in result_cmd"
+        - result.stderr == 'Hello World!\n'
+        - result.stderr_lines == ['Hello World!']
+        - result.stdout == 'Hello World\n'
+        - result.stdout_lines == ['Hello World']
+
+  always:
+  - name: Cleanup
+    theko2fi.multipass.multipass_vm:
+      name: "{{ vname }}"
+      state: absent
+      purge: true

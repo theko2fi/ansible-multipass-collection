@@ -4,10 +4,18 @@
   theko2fi.multipass.multipass_vm:
     name: "zazilapus"
     state: present
-    cpu: 2
+    cpus: 2
     memory: '2G'
     disk: 8G
   register: create_vm
+
+- name: Get the created VM specs
+  theko2fi.multipass.multipass_config_get:
+    key: "local.zazilapus.{{item}}"
+  register: create_vm_config
+  with_items:
+    - memory
+    - disk
 
 - name: Verify that VM has been created
   ansible.builtin.assert:
@@ -15,8 +23,8 @@
       - create_vm.changed
       - create_vm.result.info.zazilapus.state == "Running"
       - create_vm.result.info.zazilapus.cpu_count == "2"
-      - create_vm.result.info.zazilapus.memory.total|filesizeformat() == "2.1 GB"
-      - create_vm.result.info.zazilapus.disks.sda1.total|filesizeformat() == "8.2 GB"
+      - create_vm_config.results[0].result == "2.0GiB"
+      - create_vm_config.results[1].result == "8.0GiB"
 
 - name: Stop multipass VM
   theko2fi.multipass.multipass_vm:
@@ -47,6 +55,14 @@
     state: present
     recreate: true
   register: recreate_vm
+  
+- name: Get the recreated VM specs
+  theko2fi.multipass.multipass_config_get:
+    key: "local.zazilapus.{{item}}"
+  register: recreate_vm_config
+  with_items:
+    - memory
+    - disk
 
 - name: Verify that VM has been recreated with default values
   ansible.builtin.assert:
@@ -54,8 +70,8 @@
       - recreate_vm.changed
       - recreate_vm.result.info.zazilapus.state == "Running"
       - recreate_vm.result.info.zazilapus.cpu_count == "1"
-      - recreate_vm.result.info.zazilapus.memory.total|filesizeformat() == "998.1 MB"
-      - recreate_vm.result.info.zazilapus.disks.sda1.total|filesizeformat() == "5.1 GB"
+      - recreate_vm_config.results[0].result == "1.0GiB"
+      - recreate_vm_config.results[1].result == "5.0GiB"
 
 - name: Delete the multipass VM
   theko2fi.multipass.multipass_vm:
@@ -85,7 +101,7 @@
     state: started
   register: started_vm
 
-- name: Verify that VM has been been started
+- name: Verify that VM has been started
   ansible.builtin.assert:
     that:
       - started_vm.changed

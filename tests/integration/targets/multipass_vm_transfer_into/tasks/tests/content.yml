@@ -1,0 +1,139 @@
+---
+# Copyright 2023 Kenneth KOFFI <@theko2fi>
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- name: Registering VM name
+  set_fact:
+    vname: "{{ vname_prefix ~ '-c' }}"
+- name: Registering VM name
+  set_fact:
+    vnames: "{{ vnames + [vname] }}"
+- name: Define remote_tmp_dir
+  set_fact:
+    remote_tmp_dir : "/tmp"
+# Create VM
+
+- name: Create VM
+  theko2fi.multipass.multipass_vm:
+    name: "{{ vname }}"
+    state: started
+
+- name: Create /dir inside the VM
+  theko2fi.multipass.multipass_vm_exec:
+    name: "{{ vname }}"
+    command: mkdir dir
+    workdir: /home/ubuntu
+
+################################################################################################
+# Do tests
+
+######################### Copy
+
+- name: Copy content
+  theko2fi.multipass.multipass_vm_transfer_into:
+    name: '{{ vname }}'
+    content: |
+      Content 1
+    dest: '/home/ubuntu/file'
+  register: result_2
+
+- name: Copy content (idempotent)
+  theko2fi.multipass.multipass_vm_transfer_into:
+    name: '{{ vname }}'
+    content: |
+      Content 1
+    dest: '/home/ubuntu/file'
+  register: result_4
+
+- name: Copy content (idempotent, base 64)
+  theko2fi.multipass.multipass_vm_transfer_into:
+    name: '{{ vname }}'
+    content: "{{ 'Content 1\n' | b64encode }}"
+    content_is_b64: true
+    dest: '/home/ubuntu/file'
+  register: result_4b64
+
+- name: Dump content
+  theko2fi.multipass.multipass_vm_exec:
+    name: '{{ vname }}'
+    command: /bin/sh -c "cat /home/ubuntu/file | base64"
+  register: result_5
+
+- name: Copy content (permission denied)
+  theko2fi.multipass.multipass_vm_transfer_into:
+    name: '{{ vname }}'
+    content: |
+      Content 1
+    dest: '/file'
+  register: result_6
+  ignore_errors: true
+
+- name: Check results
+  assert:
+    that:
+      - result_2 is changed
+      - result_4 is not changed
+      - result_4b64 is not changed
+      - result_5.stdout | b64decode == 'Content 1\n'
+      - result_6 is failed
+      - "'failed to transfer content' in result_6.msg"
+
+######################### Modify #########################
+
+- name: Copy content  (changed)
+  theko2fi.multipass.multipass_vm_transfer_into:
+    name: '{{ vname }}'
+    content: |-
+      Content 2
+      Extra line
+    dest: '/home/ubuntu/file'
+  register: result_2
+
+- name: Dump file
+  theko2fi.multipass.multipass_vm_exec:
+    name: '{{ vname }}'
+    command: /bin/sh -c "cat /home/ubuntu/file | base64"
+  register: result_3
+
+- name: Check results
+  assert:
+    that:
+      - result_2 is changed
+      - result_3.stdout | b64decode == 'Content 2\nExtra line'
+
+######################### Operate with stopped Virtual Machine
+
+- name: Stop VM
+  theko2fi.multipass.multipass_vm:
+    name: "{{ vname }}"
+    state: stopped
+
+- name: Copy content (stopped VM)
+  theko2fi.multipass.multipass_vm_transfer_into:
+    name: '{{ vname }}'
+    content: |
+      Content 1
+    dest: '/home/ubuntu/file'
+  register: result_1
+
+- name: Dump content (stopped VM)
+  theko2fi.multipass.multipass_vm_exec:
+    name: '{{ vname }}'
+    command: /bin/sh -c "cat /home/ubuntu/file | base64"
+  register: result_2
+
+- name: Check results
+  assert:
+    that:
+      - result_1 is changed
+      - result_2.stdout | b64decode == 'Content 1\n'
+
+################################################################################################
+# Cleanup
+
+- name: Delete VM
+  theko2fi.multipass.multipass_vm:
+    name: "{{ vname }}"
+    state: absent
+    purge: true

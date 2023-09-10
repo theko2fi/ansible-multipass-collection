@@ -1,0 +1,49 @@
+---
+# Copyright (c) Kenneth KOFFI
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+####################################################################
+# WARNING: These are designed specifically for Ansible tests       #
+# and should not be used as examples of how to write Ansible roles #
+####################################################################
+
+- name: Create random name
+  set_fact:
+    vname: "{{ 'ansible-multipass-vm-%0x' % ((2**32) | random) }}"
+
+# Create a VM to be pruned
+- name: Create VM
+  theko2fi.multipass.multipass_vm:
+    name: "{{ vname }}"
+    state: present
+  register: vm
+
+# Delete the VM
+- name: Delete VM
+  theko2fi.multipass.multipass_vm:
+    name: "{{ vname }}"
+    state: absent
+
+# Prune VMs
+- name: Prune everything
+  theko2fi.multipass.multipass_vm_purge:
+  register: result
+
+- name: General checks
+  assert:
+    that:
+    - result is changed
+    - "vname in result.vm_purged | map(attribute='name')"
+
+# Prune VMs (idempotency check)
+- name: Prune everything
+  theko2fi.multipass.multipass_vm_purge:
+  register: result_idmp
+
+- name: Idempotency check
+  assert:
+    that:
+    - result_idmp is not changed
+    - result_idmp.vm_purged == []
+ 

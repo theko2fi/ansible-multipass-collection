@@ -18,11 +18,11 @@ all:
             ansible_python_interpreter: '/usr/bin/python3'
 EOF
 
-multipass delete --purge "${vm_name}"
-
 
 ansible-playbook -i test_connection.inventory.yml test_connection.yml \
     -e target_hosts="${vm_name}" \
     -e action_prefix= \
     -e local_folder=/tmp/ansible-local \
     -e remote_folder=/tmp/ansible-remote
+
+multipass delete --purge "${vm_name}"

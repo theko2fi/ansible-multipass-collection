@@ -17,25 +17,12 @@ Please note that this collection is **not** developed by [Canonical](https://can
 * Modules:
     - [multipass_vm](https://theko2fi.github.io/ansible-multipass-collection/branch/main/multipass_vm_module.html) - Module to manage Multipass virtual machines
     - [multipass_vm_info](https://theko2fi.github.io/ansible-multipass-collection/branch/main/multipass_vm_info_module.html) - Module to retrieves facts about Multipass virtual machines
+    - [multipass_vm_exec](https://theko2fi.github.io/ansible-multipass-collection/branch/main/multipass_vm_exec_module.html) - Module to execute command in a Multipass virtual machine
+    - [multipass_vm_purge](https://theko2fi.github.io/ansible-multipass-collection/branch/main/multipass_vm_purge_module.html) - Module to purge all deleted Multipass virtual machines permanently
+    - [multipass_vm_transfer_into](https://theko2fi.github.io/ansible-multipass-collection/branch/main/multipass_vm_transfer_into_module.html) - Module to copy a file into a Multipass virtual machine
+    - [multipass_config_get](https://theko2fi.github.io/ansible-multipass-collection/branch/main/multipass_config_get_module.html) - Module to get Multipass configuration setting
 
 ## Installation
-
-### External requirements
-
-Most modules and plugins of this collection require the Multipass python SDK which can be installed as follows:
-
-```bash
-pip install git+https://github.com/theko2fi/multipass-python-sdk.git
-```
-> Note: It's important to install the SDK using the command above because the version available on PyPI isn't up-to-date.
-
-If you already have another version of the SDK, you can force the reinstallation as below:
-
-```bash
-pip install --force-reinstall git+https://github.com/theko2fi/multipass-python-sdk.git
-```
-
-### Installing the Collection from Ansible Galaxy
 
 Before using the Multipass collection, you need to install the collection with the `ansible-galaxy` CLI:
 
@@ -54,7 +41,7 @@ See [Ansible Using collections](https://docs.ansible.com/ansible/latest/user_gui
 
 ## Usage
 
-It's preferable to use content in this collection using their Fully Qualified Collection Namespace (FQCN), for example `theko2fi.multipass.multipass_vm`. The sample playbook below will create a Multipass VM and test the connection to it.
+It's preferable to use content in this collection using their Fully Qualified Collection Namespace (FQCN), for example `theko2fi.multipass.multipass_vm`. The sample playbook below will create a Multipass VM, add the VM to the inventory and test the connection to it.
 
 ```yaml
 ---
@@ -65,7 +52,7 @@ It's preferable to use content in this collection using their Fully Qualified Co
     - name: Create a Multipass VM
       theko2fi.multipass.multipass_vm:
         name: foo
-        cpu: 2
+        cpus: 2
         memory: 2G
         disk: 8G
         state: started

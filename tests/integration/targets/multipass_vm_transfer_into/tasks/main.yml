@@ -1,0 +1,39 @@
+---
+# Copyright (c) Kenneth KOFFI
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+####################################################################
+# WARNING: These are designed specifically for Ansible tests       #
+# and should not be used as examples of how to write Ansible roles #
+####################################################################
+
+- name: Gather facts on controller
+  setup:
+    gather_subset: '!all'
+  delegate_to: localhost
+  delegate_facts: true
+  run_once: true
+
+# Create random name prefix (for containers)
+- name: Create random VM name prefix
+  set_fact:
+    vname_prefix: "{{ 'ansible-multipass-test-%0x' % ((2**32) | random) }}"
+    vnames: []
+
+- debug:
+    msg: "Using VM name prefix {{ vname_prefix }}"
+
+# Run the tests
+- block:
+  - include_tasks: run-test.yml
+    with_fileglob:
+    - "tests/*.yml"
+
+  always:
+  - name: "Make sure all virtual machines are removed"
+    theko2fi.multipass.multipass_vm:
+      name: "{{ item }}"
+      state: absent
+      purge: true
+    with_items: "{{ vnames }}"
