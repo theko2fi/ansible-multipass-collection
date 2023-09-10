@@ -4,9 +4,10 @@
 # Copyright 2023 Kenneth KOFFI <@theko2fi>
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from ansible.module_utils.basic import AnsibleModule  
-from multipass import MultipassClient
+from ansible.module_utils.basic import AnsibleModule
 from ansible.errors import AnsibleError
+from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import MultipassClient
+
 
 multipassclient = MultipassClient()
 

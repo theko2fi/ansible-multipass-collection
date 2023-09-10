@@ -9,10 +9,8 @@ __metaclass__ = type
 
 from ansible.module_utils.common.text.converters import to_native
 
-from ansible.module_utils.basic import AnsibleModule  
-from multipass import MultipassClient
-
-multipassclient = MultipassClient()
+from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import MultipassClient 
 
 
 def main():
@@ -21,7 +19,7 @@ def main():
   vm_name = module.params.get('name')
 
   try:
-    vm = multipassclient.get_vm(vm_name=vm_name)
+    vm = MultipassClient().get_vm(vm_name=vm_name)
     module.exit_json(
       changed=False,
       exists=True,
@@ -63,10 +61,6 @@ options:
 
 author:
   - "Kenneth KOFFI (@theko2fi)"
-
-requirements:
-  - Multipass python SDK
-    U(https://github.com/theko2fi/ansible-multipass-collection#external-requirements)
 '''
 
 EXAMPLES = '''
