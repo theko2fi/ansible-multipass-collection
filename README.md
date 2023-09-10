@@ -24,23 +24,6 @@ Please note that this collection is **not** developed by [Canonical](https://can
 
 ## Installation
 
-### External requirements
-
-Most modules and plugins of this collection require the Multipass python SDK which can be installed as follows:
-
-```bash
-pip install git+https://github.com/theko2fi/multipass-python-sdk.git
-```
-> Note: It's important to install the SDK using the command above because the version available on PyPI isn't up-to-date.
-
-If you already have another version of the SDK, you can force the reinstallation as below:
-
-```bash
-pip install --force-reinstall git+https://github.com/theko2fi/multipass-python-sdk.git
-```
-
-### Installing the Collection from Ansible Galaxy
-
 Before using the Multipass collection, you need to install the collection with the `ansible-galaxy` CLI:
 
 ```bash
