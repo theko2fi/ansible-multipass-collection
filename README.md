@@ -19,6 +19,7 @@ Please note that this collection is **not** developed by [Canonical](https://can
     - [multipass_vm_info](https://theko2fi.github.io/ansible-multipass-collection/branch/main/multipass_vm_info_module.html) - Module to retrieves facts about Multipass virtual machines
     - [multipass_vm_exec](https://theko2fi.github.io/ansible-multipass-collection/branch/main/multipass_vm_exec_module.html) - Module to execute command in a Multipass virtual machine
     - [multipass_vm_purge](https://theko2fi.github.io/ansible-multipass-collection/branch/main/multipass_vm_purge_module.html) - Module to purge all deleted Multipass virtual machines permanently
+    - [multipass_vm_transfer_into](https://theko2fi.github.io/ansible-multipass-collection/branch/main/multipass_vm_transfer_into_module.html) - Module to copy a file into a Multipass virtual machine
     - [multipass_config_get](https://theko2fi.github.io/ansible-multipass-collection/branch/main/multipass_config_get_module.html) - Module to get Multipass configuration setting
 
 ## Installation
