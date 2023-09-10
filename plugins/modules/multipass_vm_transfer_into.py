@@ -192,7 +192,7 @@ options:
     description:
       - The file's content.
       - If you plan to provide binary data, provide it pre-encoded to base64, and set O(content_is_b64=true).
-      - Mutually exclusive with O(path). One of O(content) and O(path) is required.
+      - Mutually exclusive with O(src). One of O(content) and O(src) is required.
     type: str
   content_is_b64:
     description:
