@@ -187,7 +187,7 @@ options:
     description:
       - Path to a file on the managed node.
       - Mutually exclusive with O(content). One of O(content) and O(src) is required.
-    type: path
+    type: str
   content:
     description:
       - The file's content.
