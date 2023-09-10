@@ -54,7 +54,7 @@ See [Ansible Using collections](https://docs.ansible.com/ansible/latest/user_gui
 
 ## Usage
 
-It's preferable to use content in this collection using their Fully Qualified Collection Namespace (FQCN), for example `theko2fi.multipass.multipass_vm`. The sample playbook below will create a Multipass VM and test the connection to it.
+It's preferable to use content in this collection using their Fully Qualified Collection Namespace (FQCN), for example `theko2fi.multipass.multipass_vm`. The sample playbook below will create a Multipass VM, add the VM to the inventory and test the connection to it.
 
 ```yaml
 ---
@@ -65,7 +65,7 @@ It's preferable to use content in this collection using their Fully Qualified Co
     - name: Create a Multipass VM
       theko2fi.multipass.multipass_vm:
         name: foo
-        cpu: 2
+        cpus: 2
         memory: 2G
         disk: 8G
         state: started

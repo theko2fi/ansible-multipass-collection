@@ -46,7 +46,7 @@ def main():
 		argument_spec=dict(
 		name = dict(required=True, type='str'),
 		image = dict(required=False, type=str, default='ubuntu-lts'),
-		cpu = dict(required=False, type=int, default=1),
+		cpus = dict(required=False, type=int, default=1),
 		memory = dict(required=False, type=str, default='1G'),
 		disk = dict(required=False, type=str, default='5G'),
 		cloud_init = dict(required=False, type=str, default=None),
@@ -58,7 +58,7 @@ def main():
     
 	vm_name = module.params.get('name')
 	image = module.params.get('image')
-	cpu = module.params.get('cpu')
+	cpus = module.params.get('cpus')
 	state = module.params.get('state')
 	memory = module.params.get('memory')
 	disk = module.params.get('disk')
@@ -68,13 +68,13 @@ def main():
 	if state in ('present', 'started'):
 		try:
 			if not is_vm_exists(vm_name):
-				vm = multipassclient.launch(vm_name=vm_name, image=image, cpu=cpu, mem=memory, disk=disk, cloud_init=cloud_init)
+				vm = multipassclient.launch(vm_name=vm_name, image=image, cpu=cpus, mem=memory, disk=disk, cloud_init=cloud_init)
 				module.exit_json(changed=True, result=vm.info())
 			else:
 				vm = multipassclient.get_vm(vm_name=vm_name)
 				if module.params.get('recreate'):
 					vm.delete(purge=True)
-					vm = multipassclient.launch(vm_name=vm_name, image=image, cpu=cpu, mem=memory, disk=disk, cloud_init=cloud_init)
+					vm = multipassclient.launch(vm_name=vm_name, image=image, cpu=cpus, mem=memory, disk=disk, cloud_init=cloud_init)
 					module.exit_json(changed=True, result=vm.info())
 
 				if state == 'started':
@@ -149,7 +149,7 @@ options:
     required: false
     type: str
     default: ubuntu-lts
-  cpu:
+  cpus:
     description: The number of CPUs of the VM.
     required: false
     type: int
@@ -203,10 +203,6 @@ options:
       of an existing virtual machine.
     type: bool
     default: false
-
-requirements:
-  - Multipass python SDK
-    U(https://github.com/theko2fi/ansible-multipass-collection#external-requirements)
 '''
 
 EXAMPLES = '''
@@ -217,7 +213,7 @@ EXAMPLES = '''
 - name: Create a VM with custom specs
   theko2fi.multipass.multipass_vm:
     name: foo
-    cpu: 2
+    cpus: 2
     memory: 2G
     disk: 5G
 
@@ -234,7 +230,7 @@ EXAMPLES = '''
 - name: Recreate a VM
   theko2fi.multipass.multipass_vm:
     name: foo
-    cpu: 4
+    cpus: 4
     memory: 2G
     disk: 10G
     recreate: true
