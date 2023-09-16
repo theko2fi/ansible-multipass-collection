@@ -7,3 +7,4 @@ github_action_key*
 .vscode/
 dfdf.json
 test-playbook.yml
+changelogs/.plugin-cache.yaml
