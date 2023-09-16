@@ -1,0 +1,32 @@
+ancestor: null
+releases:
+  0.2.0:
+    changes:
+      breaking_changes:
+      - multipass_vm - Renamed ``cpu`` option to ``cpus``
+      major_changes:
+      - multipass_vm - no longer uses the Multipass SDK for Python.
+      - multipass_vm_info - no longer uses the Multipass SDK for Python.
+      release_summary: 'Release Date: 2023-09-16
+
+        This version contains several new modules. It also removes external dependencies.
+
+        There are no longer any modules dependent on the Multipass SDK for Python.
+
+        '
+    fragments:
+    - v0.2.0.yaml
+    modules:
+    - description: Get Multipass configuration setting
+      name: multipass_config_get
+      namespace: ''
+    - description: Execute command in a Multipass virtual machine
+      name: multipass_vm_exec
+      namespace: ''
+    - description: Purge all deleted Multipass virtual machines permanently
+      name: multipass_vm_purge
+      namespace: ''
+    - description: Copy a file into a Multipass virtual machine
+      name: multipass_vm_transfer_into
+      namespace: ''
+    release_date: '2023-09-16'
