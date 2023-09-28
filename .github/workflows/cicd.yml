@@ -24,7 +24,7 @@ jobs:
       - name: Create digitalocean droplet
         id: droplet-creator
         run: |
-          DROPLET_IP=$(doctl compute droplet create --image ubuntu-22-04-x64 --size s-8vcpu-16gb --region nyc1 --user-data-file .github/files/user-data.yml --ssh-keys ${{ secrets.SSH_KEY_ID }} --wait --output json ansible-multipass-droplet | jq -r '.[].networks.v4[] | select(.type == "public") | .ip_address')
+          DROPLET_IP=$(doctl compute droplet create --image ubuntu-22-04-x64 --size s-4vcpu-8gb --region nyc1 --user-data-file .github/files/user-data.yml --ssh-keys ${{ secrets.SSH_KEY_ID }} --wait --output json ansible-multipass-droplet | jq -r '.[].networks.v4[] | select(.type == "public") | .ip_address')
           echo "DROPLET_IP=${DROPLET_IP}" >> "$GITHUB_OUTPUT"
 
   ansible_test:
