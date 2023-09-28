@@ -11,7 +11,7 @@ jobs:
   create_droplet:
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.droplet-creator.outputs.DROPLET_IP }}
+      DROPLET_IP: ${{ steps.droplet-creator.outputs.DROPLET_IP }}
     steps:
       - name: Fetch the repo
         uses: actions/checkout@v3
@@ -24,7 +24,7 @@ jobs:
       - name: Create digitalocean droplet
         id: droplet-creator
         run: |
-          DROPLET_IP=$(doctl compute droplet create --image ubuntu-22-04-x64 --size s-4vcpu-8gb --region nyc1 --user-data-file .github/files/user-data.yml --ssh-keys ${{ secrets.SSH_KEY_ID }} --wait --output json ansible-multipass-droplet | jq -r '.[].networks.v4[] | select(.type == "public") | .ip_address')
+          DROPLET_IP=$(doctl compute droplet create --image ubuntu-22-04-x64 --size s-8vcpu-16gb --region nyc1 --user-data-file .github/files/user-data.yml --ssh-keys ${{ secrets.SSH_KEY_ID }} --wait --output json ansible-multipass-droplet | jq -r '.[].networks.v4[] | select(.type == "public") | .ip_address')
           echo "DROPLET_IP=${DROPLET_IP}" >> "$GITHUB_OUTPUT"
 
   ansible_test:
@@ -69,7 +69,7 @@ jobs:
           timeout_minutes: 10
           retry_wait_seconds: 30
           max_attempts: 3
-          command: ssh-keyscan -4 -t rsa -p 22 -T 240 ${{ needs.create_droplet.outputs.output1 }} >> ~/.ssh/known_hosts
+          command: ssh-keyscan -4 -t rsa -p 22 -T 240 ${{ needs.create_droplet.outputs.DROPLET_IP }} >> ~/.ssh/known_hosts
       
       - name: check cloud-init status
         uses: nick-fields/retry@v2
@@ -77,12 +77,12 @@ jobs:
           timeout_minutes: 10
           retry_wait_seconds: 60
           max_attempts: 5
-          command: ssh ${{ secrets.SSH_USERNAME }}@${{ needs.create_droplet.outputs.output1 }} 'cloud-init status' | grep -q "done"
+          command: ssh ${{ secrets.SSH_USERNAME }}@${{ needs.create_droplet.outputs.DROPLET_IP }} 'cloud-init status' | grep -q "done"
 
       - name: Run ansible-test
         run: |
           cd ~/.ansible/collections/ansible_collections/theko2fi/multipass
-          ansible-test integration --target ssh:${{ secrets.SSH_USERNAME }}@${{ needs.create_droplet.outputs.output1 }},python=3.10 ${{ matrix.target }}
+          ansible-test integration --target ssh:${{ secrets.SSH_USERNAME }}@${{ needs.create_droplet.outputs.DROPLET_IP }},python=3.10 ${{ matrix.target }}
 
   destroy_droplet:
     runs-on: ubuntu-latest
