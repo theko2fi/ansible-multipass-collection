@@ -37,6 +37,10 @@
     that:
       - stop_vm.changed
 
+- name: Pause for 5 seconds to start the previously stopped VM
+  ansible.builtin.pause:
+    seconds: 5
+
 - name: Start a multipass VM which was stopped
   theko2fi.multipass.multipass_vm:
     name: "zazilapus"
