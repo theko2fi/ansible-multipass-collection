@@ -30,3 +30,13 @@ releases:
       name: multipass_vm_transfer_into
       namespace: ''
     release_date: '2023-09-16'
+  0.2.1:
+    changes:
+      bugfixes:
+      - theko2fi.multipass.multipass - Fix error no module named 'multipass' (https://github.com/theko2fi/ansible-multipass-collection/issues/4)
+      release_summary: 'Release Date: 2023-10-17
+
+        '
+    fragments:
+    - v0.2.1.yaml
+    release_date: '2023-10-17'

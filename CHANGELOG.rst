@@ -5,6 +5,20 @@ Theko2Fi.Multipass Release Notes
 .. contents:: Topics
 
 
+v0.2.1
+======
+
+Release Summary
+---------------
+
+Release Date: 2023-10-17
+
+
+Bugfixes
+--------
+
+- theko2fi.multipass.multipass - Fix error no module named 'multipass' (https://github.com/theko2fi/ansible-multipass-collection/issues/4)
+
 v0.2.0
 ======
 
