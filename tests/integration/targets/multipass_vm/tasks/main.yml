@@ -37,11 +37,18 @@
     that:
       - stop_vm.changed
 
+- name: Pause for 5 seconds to start the previously stopped VM
+  ansible.builtin.pause:
+    seconds: 5
+
 - name: Start a multipass VM which was stopped
   theko2fi.multipass.multipass_vm:
     name: "zazilapus"
     state: started
   register: start_vm
+  until: "start_vm is not failed"
+  retries: 3
+  delay: 10
 
 - name: Verify that VM has been started
   ansible.builtin.assert:

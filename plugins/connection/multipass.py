@@ -20,9 +20,6 @@ from ansible.plugins.connection import ConnectionBase
 from ansible.utils.display import Display
 from ansible.utils.path import unfrackpath
 
-from multipass import MultipassClient
-multipassclient = MultipassClient()
-
 display = Display()
 
 
