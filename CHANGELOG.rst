@@ -5,6 +5,22 @@ Theko2Fi.Multipass Release Notes
 .. contents:: Topics
 
 
+v0.2.2
+======
+
+Release Summary
+---------------
+
+Release Date: 2023-10-21
+
+This release contains a bugfix
+
+
+Bugfixes
+--------
+
+- Fix - ssh failed to authenticate: 'Socket error: disconnected' #7
+
 v0.2.1
 ======
 

@@ -40,3 +40,18 @@ releases:
     fragments:
     - v0.2.1.yaml
     release_date: '2023-10-17'
+  0.2.2:
+    changes:
+      bugfixes:
+      - 'Fix - ssh failed to authenticate: ''Socket error: disconnected'' #7
+
+        '
+      release_summary: 'Release Date: 2023-10-21
+
+
+        This release contains a bugfix
+
+        '
+    fragments:
+    - v0.2.2.yaml
+    release_date: '2023-10-21'
