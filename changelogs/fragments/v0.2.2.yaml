@@ -1,0 +1,7 @@
+release_summary: |
+  Release Date: 2023-10-21
+
+  This release contains a bugfix
+bugfixes:
+  - |
+    Fix - ssh failed to authenticate: 'Socket error: disconnected' #7
