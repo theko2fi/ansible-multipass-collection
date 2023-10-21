@@ -3,12 +3,36 @@ import subprocess
 from ansible_collections.theko2fi.multipass.plugins.module_utils.haikunator import Haikunator
 import os
 import json
+import time
 from shlex import split as shlexsplit
+
+class SocketError(Exception):
+    pass
+
+
+# Added decorator to automatically retry on unpredictable module failures
+def retry_on_failure(ExceptionsToCheck, max_retries=5, delay=5, backoff=2):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            mdelay = delay
+            for _ in range(max_retries):
+                try:
+                    return func(*args, **kwargs)
+                except ExceptionsToCheck as e:
+                    print(f"Error occurred: {e}. Retrying...")
+                    time.sleep(delay)
+                    mdelay *= backoff
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
 
 class MultipassVM:
     def __init__(self, vm_name, multipass_cmd):
         self.cmd = multipass_cmd
         self.vm_name = vm_name
+    # Will retry to execute info() if SocketError occurs
+    @retry_on_failure(ExceptionsToCheck=SocketError)
     def info(self):
         cmd = [self.cmd, "info", self.vm_name, "--format", "json"]
         out = subprocess.Popen(cmd, 
@@ -21,6 +45,8 @@ class MultipassVM:
             # we raise a NameError if the VM doesn't exist
             if 'instance "{0}" does not exist'.format(self.vm_name) in stderr_cleaned:
                 raise NameError("Multipass info command failed: {0}".format(stderr_cleaned[1]))
+            if "Socket error" in stderr.decode(encoding="utf-8"):
+                raise SocketError("Multipass info command failed: {0}".format(stderr_cleaned[0]))
             else:
                 raise Exception("Multipass info command failed: {0}".format(stderr.decode(encoding="utf-8")))
         return json.loads(stdout)
