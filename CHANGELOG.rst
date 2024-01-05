@@ -5,6 +5,22 @@ Theko2Fi.Multipass Release Notes
 .. contents:: Topics
 
 
+v0.2.3
+======
+
+Release Summary
+---------------
+
+Release Date: 2024-01-05
+
+This release contains a bugfix
+
+
+Bugfixes
+--------
+
+- Fix - Collection not working inside virtual environment https://github.com/theko2fi/ansible-multipass-collection/issues/9
+
 v0.2.2
 ======
 
