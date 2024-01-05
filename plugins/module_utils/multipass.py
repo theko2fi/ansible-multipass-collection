@@ -5,7 +5,7 @@ import os
 import json
 import time
 from shlex import split as shlexsplit
-from errors import SocketError
+from .errors import SocketError
 
 
 # Added decorator to automatically retry on unpredictable module failures
