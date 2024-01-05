@@ -10,18 +10,22 @@ __metaclass__ = type
 import os
 import base64
 from io import BytesIO, open as iopen
-from ansible.module_utils._text import to_bytes, to_native, to_text
-from ansible.errors import AnsibleError, AnsibleFileNotFound
+from ansible.module_utils._text import to_bytes, to_native
 import subprocess
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import retry_on_failure, SocketError
+from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import retry_on_failure
+from ansible_collections.theko2fi.multipass.plugins.module_utils.errors import (
+    SocketError,
+    MultipassFileTransferError,
+    MultipassContentTransferError
+  )
 
 
 def put_file(remote_addr, in_path, out_path):
     ''' transfer a file from local to the multipass VM '''
 
     if not os.path.exists(to_bytes(in_path, errors='surrogate_or_strict')):
-        raise AnsibleFileNotFound("file or module does not exist: {0}".format(to_native(in_path)))
+        raise FileNotFoundError("file or module does not exist: {0}".format(to_native(in_path)))
     
     @retry_on_failure(ExceptionsToCheck=SocketError) #retry on SocketError
     def low_level_code_put_file(in_path, remote_addr, out_path):
@@ -38,14 +42,14 @@ def put_file(remote_addr, in_path, out_path):
             if "Socket error" in stderr.decode(encoding="utf-8"):
               raise SocketError(stderr.decode(encoding="utf-8").strip())
             else:
-              raise AnsibleError(stderr.decode(encoding="utf-8").strip())
+              raise MultipassFileTransferError(stderr.decode(encoding="utf-8").strip())
       return exitcode
     
     try:
         # This function call actually put file inside the target VM
-        exitcode = low_level_code_put_file(in_path, remote_addr, out_path)
+        low_level_code_put_file(in_path, remote_addr, out_path)
     except Exception as e:
-        raise AnsibleError("failed to transfer file {0} to {1}:{2}\nError: {3}".format(
+        raise MultipassFileTransferError("failed to transfer file {0} to {1}:{2}\nError: {3}".format(
             to_native(in_path), to_native(remote_addr), to_native(out_path), to_native(e)
             )
         )
@@ -63,19 +67,19 @@ def put_content(remote_addr, in_content, out_path):
           stdout=subprocess.PIPE,
           stderr=subprocess.PIPE
       )
-      stdout, stderr = transfer_process.communicate(input=in_content)
+      _, stderr = transfer_process.communicate(input=in_content)
       exitcode = transfer_process.wait()
       if(exitcode != 0):
         if "Socket error" in stderr.decode(encoding="utf-8"):
           raise SocketError(stderr.decode(encoding="utf-8").strip())
         else:  
-          raise AnsibleError(stderr.decode(encoding="utf-8").strip())
+          raise MultipassContentTransferError(stderr.decode(encoding="utf-8").strip())
       return exitcode
 
     try:
-      exitcode = _low_level_code_put_content(remote_addr=remote_addr, out_path=out_path, in_content=in_content)
+      _low_level_code_put_content(remote_addr=remote_addr, out_path=out_path, in_content=in_content)
     except Exception as e:
-        raise AnsibleError("failed to transfer content {0} to {1}:{2}\nError: {3}".format(
+        raise MultipassFileTransferError("failed to transfer content {0} to {1}:{2}\nError: {3}".format(
             to_native(in_content), to_native(remote_addr), to_native(out_path), to_native(e)
             )
         )

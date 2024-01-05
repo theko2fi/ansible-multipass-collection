@@ -55,3 +55,18 @@ releases:
     fragments:
     - v0.2.2.yaml
     release_date: '2023-10-21'
+  0.2.3:
+    changes:
+      bugfixes:
+      - 'Fix - Collection not working inside virtual environment https://github.com/theko2fi/ansible-multipass-collection/issues/9
+
+        '
+      release_summary: 'Release Date: 2024-01-05
+
+
+        This release contains a bugfix
+
+        '
+    fragments:
+    - v0.2.3.yaml
+    release_date: '2024-01-05'

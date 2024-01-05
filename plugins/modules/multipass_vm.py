@@ -5,7 +5,6 @@
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.errors import AnsibleError
 from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import MultipassClient
 
 
@@ -18,8 +17,6 @@ def is_vm_exists(vm_name):
 		return True
 	except NameError:
 		return False
-	except Exception as e:
-		raise AnsibleError(str(e))
 	
 def get_vm_state(vm_name: str):
 	if is_vm_exists(vm_name=vm_name):
