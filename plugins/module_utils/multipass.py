@@ -7,6 +7,11 @@ import time
 from shlex import split as shlexsplit
 from .errors import SocketError, MountNonExistentError, MountExistsError
 
+
+def get_existing_mounts(vm_name):
+    vm = MultipassClient().get_vm(vm_name)
+    return vm.info().get('info').get(vm_name).get("mounts")
+
 # Added decorator to automatically retry on unpredictable module failures
 def retry_on_failure(ExceptionsToCheck, max_retries=5, delay=5, backoff=2):
     def decorator(func):
