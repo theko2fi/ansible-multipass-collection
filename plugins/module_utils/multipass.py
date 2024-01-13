@@ -5,10 +5,7 @@ import os
 import json
 import time
 from shlex import split as shlexsplit
-
-class SocketError(Exception):
-    pass
-
+from .errors import SocketError, MountNonExistentError, MountExistsError
 
 # Added decorator to automatically retry on unpredictable module failures
 def retry_on_failure(ExceptionsToCheck, max_retries=5, delay=5, backoff=2):
@@ -31,6 +28,7 @@ class MultipassVM:
     def __init__(self, vm_name, multipass_cmd):
         self.cmd = multipass_cmd
         self.vm_name = vm_name
+
     # Will retry to execute info() if SocketError occurs
     @retry_on_failure(ExceptionsToCheck=SocketError)
     def info(self):
@@ -50,6 +48,7 @@ class MultipassVM:
             else:
                 raise Exception("Multipass info command failed: {0}".format(stderr.decode(encoding="utf-8")))
         return json.loads(stdout)
+
     def delete(self, purge=False):
         cmd = [self.cmd, "delete", self.vm_name]
         if purge:
@@ -69,8 +68,10 @@ class MultipassVM:
                     self.vm_name, stderr.decode(encoding="utf-8")
                     )
                 )
+
     def shell(self):
         raise Exception("The shell command is not supported in the Multipass SDK. Consider using exec.")
+
     def exec(self, cmd_to_execute, working_directory=""):
         cmd = [self.cmd, "exec", self.vm_name]
         if working_directory:
@@ -86,18 +87,21 @@ class MultipassVM:
         if(exitcode != 0):
             raise Exception("Multipass exec command failed: {0}".format(stderr.decode(encoding="utf-8")))
         return stdout, stderr
+
     def stop(self):
         cmd = [self.cmd, "stop", self.vm_name]
         try:
             subprocess.check_output(cmd)
         except:
             raise Exception("Error stopping Multipass VM {0}".format(self.vm_name))
+
     def start(self):
         cmd = [self.cmd, "start", self.vm_name]
         try:
             subprocess.check_output(cmd)
         except:
             raise Exception("Error starting Multipass VM {0}".format(self.vm_name))
+
     def restart(self):
         cmd = [self.cmd, "restart", self.vm_name]
         try:
@@ -111,6 +115,7 @@ class MultipassClient:
     """
     def __init__(self, multipass_cmd="multipass"):
         self.cmd = multipass_cmd
+
     def launch(self, vm_name=None, cpu=1, disk="5G", mem="1G", image=None, cloud_init=None):
         if(not vm_name):
             # similar to Multipass's VM name generator
@@ -126,20 +131,24 @@ class MultipassClient:
         except:
             raise Exception("Error launching Multipass VM {0}".format(vm_name))
         return MultipassVM(vm_name, self.cmd)
+
     def transfer(self, src, dest):
         cmd = [self.cmd, "transfer", src, dest]
         try:
             subprocess.check_output(cmd)
         except:
             raise Exception("Multipass transfer command failed.")
+
     def get_vm(self, vm_name):
         return MultipassVM(vm_name, self.cmd)
+
     def purge(self):
         cmd = [self.cmd, "purge"]
         try:
             subprocess.check_output(cmd)
         except:
             raise Exception("Purge command failed.")
+
     def list(self):
         cmd = [self.cmd, "list", "--format", "json"]
         out = subprocess.Popen(cmd, 
@@ -150,6 +159,7 @@ class MultipassClient:
         if(not exitcode == 0):
             raise Exception("Multipass list command failed: {0}".format(stderr))
         return json.loads(stdout)
+
     def find(self):
         cmd = [self.cmd, "find", "--format", "json"]
         out = subprocess.Popen(cmd, 
@@ -160,30 +170,52 @@ class MultipassClient:
         if(not exitcode == 0):
             raise Exception("Multipass find command failed: {0}".format(stderr))
         return json.loads(stdout)
-    def mount(self, src, target):
-        cmd = [self.cmd, "mount", src, target]
-        try:
-            subprocess.check_output(cmd)
-        except:
-            raise Exception("Multipass mount command failed.")
-    def unmount(self, mount):
-        cmd = [self.cmd, "unmount", mount]
-        try:
-            subprocess.check_output(cmd)
-        except:
-            raise Exception("Multipass unmount command failed.")
+
+    def mount(self, src, target, mount_type='classic', uid_maps=[], gid_maps=[]):
+        mount_options = ["--type", mount_type]
+        for uid_map in uid_maps:
+            mount_options.extend(["--uid-map", uid_map])
+        for gid_map in gid_maps:
+            mount_options.extend(["--gid-map", gid_map])
+        cmd = [self.cmd, "mount"] + mount_options + [src, target]
+        out = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        _,stderr = out.communicate()
+        exitcode = out.wait()
+        stderr_cleaned = stderr.decode(encoding="utf-8").splitlines()
+        if(not exitcode == 0):
+            for error_msg in stderr_cleaned:
+                if 'is already mounted' in error_msg:
+                    raise MountExistsError
+            raise Exception("Multipass mount command failed: {0}".format(stderr.decode(encoding="utf-8").rstrip()))
+
+    def umount(self, mount):
+        cmd = [self.cmd, "umount", mount]
+        out = subprocess.Popen(cmd, 
+           stdout=subprocess.PIPE, 
+           stderr=subprocess.PIPE)
+        _,stderr = out.communicate()
+        exitcode = out.wait()
+        stderr_cleaned = stderr.decode(encoding="utf-8").splitlines()
+        if(not exitcode == 0):
+            for error_msg in stderr_cleaned:
+                if 'is not mounted' in error_msg:
+                    raise MountNonExistentError
+            raise Exception("{}".format(stderr.decode(encoding="utf-8").rstrip()))
+
     def recover(self, vm_name):
         cmd = [self.cmd, "recover", vm_name]
         try:
             subprocess.check_output(cmd)
         except:
             raise Exception("Multipass recover command failed.")
+
     def suspend(self):
         cmd = [self.cmd, "suspend"]
         try:
             subprocess.check_output(cmd)
         except:
             raise Exception("Multipass suspend command failed.")
+
     def get(self, key):
         cmd = [self.cmd, "get", key]
         out = subprocess.Popen(cmd,

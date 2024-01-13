@@ -1,0 +1,138 @@
+---
+- name: Delete the VM
+  theko2fi.multipass.multipass_vm:
+    name: "healthy-cankerworm"
+    state: absent
+    purge: true
+
+- name: Ensure that the VM exist for the test
+  theko2fi.multipass.multipass_vm:
+    name: "healthy-cankerworm"
+    state: present
+
+# - name: Unmount all the existing mount points
+#   theko2fi.multipass.multipass_mount:
+#     name: "healthy-cankerworm"
+#     state: absent
+
+- name: Create '/tmp' directory if it does not exist
+  ansible.builtin.file:
+    path: /tmp
+    state: directory
+
+# - name: Debug
+#   ansible.builtin.debug:
+#     var: create_vm
+
+- name: Mount '/tmp' directory from the host to '/tmp' inside the VM named 'healthy-cankerworm'
+  theko2fi.multipass.multipass_mount:
+    name: "healthy-cankerworm"
+    source: /tmp
+
+- name: Mount '/tmp' to '/tmp' (check idempotency)
+  theko2fi.multipass.multipass_mount:
+    name: "healthy-cankerworm"
+    source: /tmp
+
+- name: Mount '/tmp' to '/data' inside the VM, set ownership
+  theko2fi.multipass.multipass_mount:
+    name: healthy-cankerworm
+    source: /tmp
+    target: /data
+    state: present
+    type: classic
+    uid_map:
+      - "50:50"
+      - "1000:1000"
+    gid_map:
+      - "50:50"
+
+- name: Unmount '/tmp' directory from the VM
+  theko2fi.multipass.multipass_mount:
+    name: healthy-cankerworm
+    target: /tmp
+    state: absent
+
+- name: Unmount all mount points from the 'healthy-cankerworm' VM
+  theko2fi.multipass.multipass_mount:
+    name: healthy-cankerworm
+    state: absent
+
+- name: Unmount all directories (idempotency check)
+  theko2fi.multipass.multipass_mount:
+    name: "healthy-cankerworm"
+    state: absent
+
+- name: Delete the VM
+  theko2fi.multipass.multipass_vm:
+    name: "healthy-cankerworm"
+    state: absent
+    purge: true
+
+# - name: Mount a nonexistent source directory
+#   theko2fi.multipass.multipass_mount:
+#     name: "healthy-cankerworm"
+#     source: "C:/Users/kenneth/Downloads/165.232.139.40xx"
+#     target: "/tmp"
+#     state: present
+#   register: eettt
+#   ignore_errors: true
+
+# - name: Debug
+#   ansible.builtin.debug:
+#     var: eettt
+
+# - name: Mount to a nonexistent instance
+#   theko2fi.multipass.multipass_mount:
+#     name: "heaaalthy-cankerworm"
+#     source: "C:/Users/kenneth/Downloads/165.232.139.40"
+#     target: "/tmp"
+#     state: present
+#   register: ee
+#   ignore_errors: true
+
+# - name: Debug
+#   ansible.builtin.debug:
+#     var: ee
+
+# - name: Mount a directory to an instance
+#   theko2fi.multipass.multipass_mount:
+#     name: "healthy-cankerworm"
+#     source: "C:/Users/kenneth/Downloads/165.232.139.40"
+#     target: "/tmp"
+#     state: present
+#   register: mounted
+
+# - name: Debug
+#   ansible.builtin.debug:
+#     var: mounted
+
+# - name: Mount a directory to an instance (idempotency check)
+#   theko2fi.multipass.multipass_mount:
+#     name: "healthy-cankerworm"
+#     source: "C:/Users/kenneth/Downloads/165.232.139.40"
+#     target: "/tmp"
+#     state: present
+
+# - name: Unmount specific directory
+#   theko2fi.multipass.multipass_mount:
+#     name: "healthy-cankerworm"
+#     target: "/tmp"
+#     state: absent
+
+# - name: Unmount nonexistent mount point
+#   theko2fi.multipass.multipass_mount:
+#     name: "healthy-cankerworm"
+#     target: "/tmpxx"
+#     state: absent
+
+# - name: Unmount all directories
+#   theko2fi.multipass.multipass_mount:
+#     name: "healthy-cankerworm"
+#     state: absent
+
+# - name: Unmount all directories (idempotency check)
+#   theko2fi.multipass.multipass_mount:
+#     name: "healthy-cankerworm"
+#     state: absent
+
