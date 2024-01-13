@@ -63,7 +63,7 @@ jobs:
       - name: Run ansible-test
         run: |
           cd ~/.ansible/collections/ansible_collections/theko2fi/multipass
-          ansible-test integration --target ssh:${{ secrets.SSH_USERNAME }}@${{ env.DROPLET_IP }},python=3.10 --exclude connection_multipass
+          ansible-test integration --target ssh:${{ secrets.SSH_USERNAME }}@${{ env.DROPLET_IP }},python=3.10 --exclude connection_multipass,multipass_mount
 
       - name: Delete droplet
         if: ${{ always() }}

@@ -5,5 +5,4 @@ runcmd:
   - apt update 
   - apt install python3-pip -y
   - pip3 install ansible
-  - pip3 install git+https://github.com/theko2fi/multipass-python-sdk.git
   - snap install multipass
