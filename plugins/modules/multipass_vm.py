@@ -12,9 +12,9 @@ import os, sys
 multipassclient = MultipassClient()
 
 class AnsibleMultipassVM:
-	def __init__(self, vm_name):
-		self.vm_name = vm_name
-		self.vm = multipassclient.get_vm(vm_name=vm_name)
+	def __init__(self, name):
+		self.name = name
+		self.vm = multipassclient.get_vm(vm_name=name)
 
 	@property
 	def is_vm_exists(self):
@@ -24,9 +24,8 @@ class AnsibleMultipassVM:
 		except NameError:
 			return False
 		
-	@property
 	def get_vm_state(self):
-		vm_state = self.vm.info().get("info").get(self.vm_name).get("state")
+		vm_state = self.vm.info().get("info").get(self.name).get("state")
 		return vm_state
 	
 	@property
@@ -34,12 +33,13 @@ class AnsibleMultipassVM:
 		return self.get_vm_state() == 'Deleted'
 	
 	@property
-	def is_vm_running(self):
+	def is_vm_running(self) -> bool:
 		return self.get_vm_state() == 'Running'
 	
 	@property
-	def is_vm_stopped(self):
-		return self.get_vm_state() == 'Stopped'
+	def is_vm_stopped(self) -> bool:
+		vm_state = self.get_vm_state()
+		return vm_state == 'Stopped'
 
 def compare_dictionaries(dict1, dict2):
 	# Check for keys present in dict1 but not in dict2
@@ -210,8 +210,6 @@ def main():
 			if not ansible_multipass.is_vm_exists:
 				module.exit_json(changed=False)
 			else:
-				vm = ansible_multipass.vm
-
 				if state == 'stopped':
 					# we do nothing if the VM is already stopped
 					if ansible_multipass.is_vm_stopped:
@@ -220,11 +218,11 @@ def main():
 						module.exit_json(changed=False)
 					else:
 						# stop the VM if it's running
-						vm.stop()
-						module.exit_json(changed=True)
+						ansible_multipass.vm.stop()
+						module.exit_json(changed=True)							
 
 				try:
-					vm.delete(purge=purge)
+					ansible_multipass.vm.delete(purge=purge)
 					module.exit_json(changed=True)
 				except NameError:
 					# we do nothing if the VM doesn't exist
