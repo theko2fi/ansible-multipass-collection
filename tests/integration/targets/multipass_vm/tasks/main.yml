@@ -135,3 +135,6 @@
   ansible.builtin.assert:
     that:
       - repurge_vm.changed == False
+
+- name: Include mount tests
+  ansible.builtin.import_tasks: mount.yml

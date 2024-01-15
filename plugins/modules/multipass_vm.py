@@ -310,7 +310,7 @@ options:
     				- A list of group IDs mapping for use in the mount.
     				- Use the Multipass CLI syntax: C(<host>:<instance>).
     				  File and folder ownership will be mapped from <host> to <instance> inside the VM.
-					- - Omitting an gid_map that is currently applied to a mount, will remove it.
+					- Omitting an gid_map that is currently applied to a mount, will remove it.
     			type: list
     			elements: str
 	disk:

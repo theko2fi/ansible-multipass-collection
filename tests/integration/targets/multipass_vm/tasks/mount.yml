@@ -1,5 +1,11 @@
 ---
 
+- name: Ensure that VM doesn't exist
+  theko2fi.multipass.multipass_vm:
+    name: "zobosky"
+    state: absent
+    purge: true
+
 - name: Mount directories to multipass VM
   theko2fi.multipass.multipass_vm:
     name: "zobosky"
@@ -92,3 +98,24 @@
     that:
       - remove_one_mount_point.changed
       - "'/tmpyy' not in remove_one_mount_point.result.info.zobosky.mounts"
+
+- name: Remove one mount point (check idempotency)
+  theko2fi.multipass.multipass_vm:
+    name: "zobosky"
+    state: present
+    mounts:
+      - source: "/tmp"
+        target: "/tmpzz"
+  register: remove_one_mount_point_idempotency
+
+
+- name: Verify that '/tmpyy' mount point has been removed (idempotency)
+  ansible.builtin.assert:
+    that:
+      - remove_one_mount_point.changed == False
+
+- name: Delete and purge VM
+  theko2fi.multipass.multipass_vm:
+    name: "zobosky"
+    state: absent
+    purge: true
