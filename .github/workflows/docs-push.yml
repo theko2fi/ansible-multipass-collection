@@ -37,6 +37,7 @@
           init-html-short-title: Theko2fi.Multipass Collection Docs
           init-extra-html-theme-options: |
             documentation_home_url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/branch/main/
+          init-extra-conf: "html_js_files=[('https://eu.umami.is/script.js', {'data-website-id': '2d66a652-7cca-4398-8c5a-d9b04a0d3a95','defer': 'defer'})]"
 
       publish-docs-gh-pages:
         # for now we won't run this on forks
