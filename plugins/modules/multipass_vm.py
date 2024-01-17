@@ -8,77 +8,77 @@ from ansible.errors import AnsibleError
 multipassclient = MultipassClient()
 
 def is_vm_exists(vm_name):
-	vm_local = multipassclient.get_vm(vm_name=vm_name)
-	try:
-		vm_local.info()
-		return True
-	except Exception as e:
-		return False
-	
+  vm_local = multipassclient.get_vm(vm_name=vm_name)
+  try:
+    vm_local.info()
+    return True
+  except Exception as e:
+    return False
+  
 def get_vm_state(vm_name: str):
-	if is_vm_exists(vm_name=vm_name):
-		vm = multipassclient.get_vm(vm_name=vm_name)
-		vm_info = vm.info()
-		vm_state = vm_info.get("info").get(vm_name).get("state")
-		return vm_state
+  if is_vm_exists(vm_name=vm_name):
+    vm = multipassclient.get_vm(vm_name=vm_name)
+    vm_info = vm.info()
+    vm_state = vm_info.get("info").get(vm_name).get("state")
+    return vm_state
 
 def is_vm_deleted(vm_name: str):
-	vm_state = get_vm_state(vm_name=vm_name)
-	return vm_state == 'Deleted'
-	
+  vm_state = get_vm_state(vm_name=vm_name)
+  return vm_state == 'Deleted'
+  
 def is_vm_running(vm_name: str):
-	vm_state = get_vm_state(vm_name=vm_name)
-	return vm_state == 'Running'
+  vm_state = get_vm_state(vm_name=vm_name)
+  return vm_state == 'Running'
 
 
 def main():
-	module = AnsibleModule(
-		argument_spec=dict(
-		name = dict(required=True, type='str'),
-		image = dict(required=False, type=str, default='ubuntu-lts'),
-		cpu = dict(required=False, type=int, default=1),
-		memory = dict(required=False, type=str, default='1G'),
-		disk = dict(required=False, type=str, default='5G'),
-		cloud_init = dict(required=False, type=str, default=None),
-		state = dict(required=False, type=str, default='present'),
-		recreate = dict(required=False, type=bool, default=False)
-		)
-	)
+  module = AnsibleModule(
+    argument_spec=dict(
+    name = dict(required=True, type='str'),
+    image = dict(required=False, type=str, default='ubuntu-lts'),
+    cpu = dict(required=False, type=int, default=1),
+    memory = dict(required=False, type=str, default='1G'),
+    disk = dict(required=False, type=str, default='5G'),
+    cloud_init = dict(required=False, type=str, default=None),
+    state = dict(required=False, type=str, default='present'),
+    recreate = dict(required=False, type=bool, default=False)
+    )
+  )
     
-	vm_name = module.params.get('name')
-	image = module.params.get('image')
-	cpu = module.params.get('cpu')
-	state = module.params.get('state')
-	memory = module.params.get('memory')
-	disk = module.params.get('disk')
-	cloud_init = module.params.get('cloud_init')
+  vm_name = module.params.get('name')
+  image = module.params.get('image')
+  cpu = module.params.get('cpu')
+  state = module.params.get('state')
+  memory = module.params.get('memory')
+  disk = module.params.get('disk')
+  cloud_init = module.params.get('cloud_init')
 
-	if state in ('present'):
-		if not is_vm_exists(vm_name):
-			vm = multipassclient.launch(vm_name=vm_name, image=image, cpu=cpu, mem=memory, disk=disk, cloud_init=cloud_init)
-			module.exit_json(changed=True, resultat=vm.info())
-		else:
-			vm = multipassclient.get_vm(vm_name=vm_name)
-			if module.params.get('recreate'):
-				vm.delete()
-				multipassclient.purge()
-				vm = multipassclient.launch(vm_name=vm_name, image=image, cpu=cpu, mem=memory, disk=disk, cloud_init=cloud_init)
-				module.exit_json(changed=True, resultat=vm.info())
-			module.exit_json(changed=False, resultat=vm.info())
-	if state in ('absent'):
-		if is_vm_deleted(vm_name=vm_name):
-			module.exit_json(changed=False)
-		else:
-			vm = multipassclient.get_vm(vm_name=vm_name)
-			try:
-				vm.delete()
-			except NameError:
-				module.exit_json(changed=False)
-			module.exit_json(changed=True)
+  if state in ('present'):
+    if not is_vm_exists(vm_name):
+      vm = multipassclient.launch(vm_name=vm_name, image=image, cpu=cpu, mem=memory, disk=disk, cloud_init=cloud_init)
+      module.exit_json(changed=True, resultat=vm.info())
+    else:
+      vm = multipassclient.get_vm(vm_name=vm_name)
+      if module.params.get('recreate'):
+        vm.delete()
+        multipassclient.purge()
+        vm = multipassclient.launch(vm_name=vm_name, image=image, cpu=cpu, mem=memory, disk=disk, cloud_init=cloud_init)
+        module.exit_json(changed=True, resultat=vm.info())
+      module.exit_json(changed=False, resultat=vm.info())
+  if state in ('absent'):
+    if is_vm_deleted(vm_name=vm_name):
+      module.exit_json(changed=False)
+    else:
+      vm = multipassclient.get_vm(vm_name=vm_name)
+      try:
+        vm.delete()
+      except NameError:
+        module.exit_json(changed=False)
+      module.exit_json(changed=True)
 
 
 if __name__ == "__main__":
-	main()
+  main()
 
 
 DOCUMENTATION = '''
@@ -93,7 +93,7 @@ options:
   name:
     description:
       - Name for the VM.
-	    - If it is C('primary') (the configured primary instance name), the user's home directory is mounted inside the newly launched instance, in C('Home').
+      - If it is C('primary') (the configured primary instance name), the user's home directory is mounted inside the newly launched instance, in C('Home').
     required: yes
     type: str
   image:
@@ -168,7 +168,7 @@ EXAMPLES = '''
     memory: 2G
     disk: 10G
     recreate: true
-	
+
 - name: "Delete a VM"
   theko2fi.multipass.multipass_vm:
     name: "foo"
@@ -177,5 +177,5 @@ EXAMPLES = '''
 
 RETURN = '''
 resultat:
-	description: return the VM info
+  description: return the VM info
 '''
