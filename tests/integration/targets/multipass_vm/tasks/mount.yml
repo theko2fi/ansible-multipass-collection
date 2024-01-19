@@ -117,7 +117,7 @@
 - name: Verify that '/tmpyy' mount point has been removed (idempotency)
   ansible.builtin.assert:
     that:
-      - remove_one_mount_point.changed == False
+      - remove_one_mount_point_idempotency.changed == False
 
 - name: Delete and purge VM
   theko2fi.multipass.multipass_vm:
