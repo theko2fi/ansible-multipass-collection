@@ -6,6 +6,11 @@
     state: absent
     purge: true
 
+- name: Ensure that mount source folder exists
+  ansible.builtin.file:
+    path: "/root/tmp/testmount2"
+    state: directory
+
 - name: Mount directories to multipass VM
   theko2fi.multipass.multipass_vm:
     name: "zobosky"
