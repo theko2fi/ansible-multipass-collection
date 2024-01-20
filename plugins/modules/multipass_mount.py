@@ -104,7 +104,7 @@ options:
     description:
       - A list of group IDs mapping for use in the mount.
       - Use the Multipass CLI syntax: C(<host>:<instance>).
-        File and folder ownership will be mapped from <host> to <instance> inside the VM.
+      - File and folder ownership will be mapped from <host> to <instance> inside the VM.
     type: list
     elements: str
     default: []
@@ -112,7 +112,7 @@ options:
     description:
       - A list of user IDs mapping for use in the mount.
       - Use the Multipass CLI syntax: C(<host>:<instance>).
-        File and folder ownership will be mapped from <host> to <instance> inside the VM.
+      - File and folder ownership will be mapped from <host> to <instance> inside the VM.
     type: list
     elements: str
     default: []
