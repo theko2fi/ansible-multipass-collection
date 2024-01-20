@@ -1,2 +1,0 @@
-vm_name: "{{ 'ansible-multipass--mount-test-%0x' % ((2**32) | random) }}"
-mount_source_for_test: "{{ansible_env.HOME}}/foo_bar"
