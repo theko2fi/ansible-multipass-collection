@@ -65,6 +65,7 @@ if __name__ == "__main__":
 
 
 DOCUMENTATION = '''
+---
 module: multipass_mount
 short_description: Module to manage directory mapping between host and Multipass virtual machine
 description:
@@ -107,7 +108,6 @@ options:
       - File and folder ownership will be mapped from <host> to <instance> inside the VM.
     type: list
     elements: str
-    default: []
   uid_map:
     description:
       - A list of user IDs mapping for use in the mount.
@@ -115,7 +115,6 @@ options:
       - File and folder ownership will be mapped from <host> to <instance> inside the VM.
     type: list
     elements: str
-    default: []
   state:
     description:
       - V(absent) Unmount the O(target) mount point from the VM.
