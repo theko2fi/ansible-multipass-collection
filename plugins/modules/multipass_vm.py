@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
-# Copyright 2023 Kenneth KOFFI <@theko2fi>
+# Copyright 2023 Kenneth KOFFI (@theko2fi)
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from ansible.module_utils.basic import AnsibleModule
@@ -10,6 +10,7 @@ import os, sys
 
 
 multipassclient = MultipassClient()
+
 
 class AnsibleMultipassVM:
     def __init__(self, name):

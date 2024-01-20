@@ -1,0 +1,7 @@
+release_summary: |
+  Release Date: 2024-01-05
+
+  This release contains a bugfix
+bugfixes:
+  - |
+    Fix - Collection not working inside virtual environment https://github.com/theko2fi/ansible-multipass-collection/issues/9

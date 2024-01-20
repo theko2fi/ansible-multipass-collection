@@ -7,7 +7,6 @@ import time
 from shlex import split as shlexsplit
 from .errors import SocketError, MountNonExistentError, MountExistsError
 
-
 def get_existing_mounts(vm_name):
     vm = MultipassClient().get_vm(vm_name)
     return vm.info().get('info').get(vm_name).get("mounts")
