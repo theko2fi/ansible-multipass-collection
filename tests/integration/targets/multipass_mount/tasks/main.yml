@@ -1,73 +1,120 @@
 ---
-- name: Delete the VM
+- name: Delete any existing VM
   theko2fi.multipass.multipass_vm:
-    name: "healthy-cankerworm"
+    name: "{{vm_name}}"
     state: absent
     purge: true
 
 - name: Ensure that the VM exist for the test
   theko2fi.multipass.multipass_vm:
-    name: "healthy-cankerworm"
+    name: "{{vm_name}}"
     state: present
 
-# - name: Unmount all the existing mount points
-#   theko2fi.multipass.multipass_mount:
-#     name: "healthy-cankerworm"
-#     state: absent
-
-- name: Create '/tmp' directory if it does not exist
+- name: Create '{{ mount_source_for_test }}' directory if it does not exist
   ansible.builtin.file:
-    path: /tmp
+    path: "{{ mount_source_for_test }}"
     state: directory
 
-# - name: Debug
-#   ansible.builtin.debug:
-#     var: create_vm
-
-- name: Mount '/tmp' directory from the host to '/tmp' inside the VM named 'healthy-cankerworm'
+- name: Mount '{{ mount_source_for_test }}' directory from the host to '{{ mount_source_for_test }}' inside the VM named '{{vm_name}}'
   theko2fi.multipass.multipass_mount:
-    name: "healthy-cankerworm"
-    source: /tmp
+    name: "{{vm_name}}"
+    source: "{{ mount_source_for_test }}"
+  register: mount_output
 
-- name: Mount '/tmp' to '/tmp' (check idempotency)
-  theko2fi.multipass.multipass_mount:
-    name: "healthy-cankerworm"
-    source: /tmp
+- name: Assert that {{ mount_source_for_test }} has been mounted to the VM
+  ansible.builtin.assert:
+    that:
+      - mount_output.changed
+      - mount_output.result is defined
+      - mount_output.result.source_path == mount_source_for_test
 
-- name: Mount '/tmp' to '/data' inside the VM, set ownership
+- name: Mount '{{ mount_source_for_test }}' to '{{ mount_source_for_test }}' (check idempotency)
   theko2fi.multipass.multipass_mount:
-    name: healthy-cankerworm
-    source: /tmp
+    name: "{{vm_name}}"
+    source: "{{ mount_source_for_test }}"
+  register: mount_idempotency_output
+
+- name: Check idempotency
+  ansible.builtin.assert:
+    that:
+      - mount_idempotency_output.changed == False
+
+- name: Mount '{{ mount_source_for_test }}' to '/data' inside the VM, set ownership
+  theko2fi.multipass.multipass_mount:
+    name: "{{vm_name}}"
+    source: "{{ mount_source_for_test }}"
     target: /data
     state: present
-    type: classic
     uid_map:
       - "50:50"
       - "1000:1000"
     gid_map:
       - "50:50"
+  register: mount_to_data
 
-- name: Unmount '/tmp' directory from the VM
-  theko2fi.multipass.multipass_mount:
-    name: healthy-cankerworm
-    target: /tmp
-    state: absent
+- name: Assert that {{ mount_source_for_test }} has been mounted to /data
+  ansible.builtin.assert:
+    that:
+      - mount_to_data.changed
+      - mount_to_data.result is defined
+      - mount_to_data.result.source_path == mount_source_for_test
+      - mount_to_data.result.uid_mappings == ["50:50", "1000:1000"]
+      - mount_to_data.result.gid_mappings == ["50:50"]
 
-- name: Unmount all mount points from the 'healthy-cankerworm' VM
+- name: Unmount '{{ mount_source_for_test }}' directory from the VM
   theko2fi.multipass.multipass_mount:
-    name: healthy-cankerworm
+    name: "{{vm_name}}"
+    target: "{{ mount_source_for_test }}"
     state: absent
+  register: unmount
+
+- name: Get infos on virtual machine
+  theko2fi.multipass.multipass_vm_info:
+    name: "{{vm_name}}"
+  register: unmount_info
+
+- name: Assert that {{ mount_source_for_test }} has been unmounted
+  ansible.builtin.assert:
+    that:
+      - unmount.changed
+      - unmount_info.result.info[vm_name].mounts[mount_source_for_test] is not defined
+      - unmount_info.result.info[vm_name].mounts['/data'] is defined
+
+- name: Unmount all mount points from the '{{vm_name}}' VM
+  theko2fi.multipass.multipass_mount:
+    name: "{{vm_name}}"
+    state: absent
+  register: unmount_all
+
+- name: Get infos on virtual machine
+  theko2fi.multipass.multipass_vm_info:
+    name: "{{vm_name}}"
+  register: unmount_all_info
+
+- name: Assert that all mount points have been removed from the VM
+  ansible.builtin.assert:
+    that:
+      - unmount_all.changed
+      - unmount_all_info.result.info[vm_name].mounts is not defined
 
 - name: Unmount all directories (idempotency check)
   theko2fi.multipass.multipass_mount:
-    name: "healthy-cankerworm"
+    name: "{{vm_name}}"
     state: absent
+  register: unmount_all_idempotency
+
+- name: Assert Unmount all directories (idempotency check)
+  ansible.builtin.assert:
+    that:
+      - unmount_all_idempotency.changed == False
 
 - name: Delete the VM
   theko2fi.multipass.multipass_vm:
-    name: "healthy-cankerworm"
+    name: "{{vm_name}}"
     state: absent
     purge: true
+
+###### For windows devices #############
 
 # - name: Mount a nonexistent source directory
 #   theko2fi.multipass.multipass_mount:

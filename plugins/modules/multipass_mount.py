@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #
-# Copyright 2023 Kenneth KOFFI <@theko2fi>
+# Copyright 2023 Kenneth KOFFI (@theko2fi)
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from ansible.module_utils.basic import AnsibleModule
@@ -47,13 +47,9 @@ def main():
         except Exception as e:
             module.fail_json(msg=str(e))
     else:
-        target = vm_name
-        if dest:
-            target = f"{target}:{dest}"
+        target = f"{vm_name}:{dest}" if dest else vm_name
         try:
-            changed = True
-            if not get_existing_mounts(vm_name=vm_name):
-                changed = False
+            changed = False if not get_existing_mounts(vm_name=vm_name) else True
             multipassclient.umount(mount=target)
             module.exit_json(changed=changed)
         except MountNonExistentError:
@@ -177,13 +173,13 @@ result:
     - Empty if O(state=absent).
   returned: when O(state=present)
   type: dict
-  sample: "/root/tmp": {
-                    "gid_mappings": [
-                        "0:default"
-                    ],
-                    "source_path": "/root/tmp",
-                    "uid_mappings": [
-                        "0:default"
-                    ]
-                }
+  sample: {
+            "gid_mappings": [
+              "0:default"
+            ],
+            "source_path": "/root/tmp",
+            "uid_mappings": [
+              "0:default"
+            ]
+          }
 '''
