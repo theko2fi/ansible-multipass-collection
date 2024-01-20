@@ -60,7 +60,7 @@ def main():
 
 
 if __name__ == "__main__":
-	main()
+  main()
 
 
 
@@ -103,16 +103,16 @@ options:
   gid_map:
     description:
       - A list of group IDs mapping for use in the mount.
-      - Use the Multipass CLI syntax: C(<host>:<instance>).
-        File and folder ownership will be mapped from <host> to <instance> inside the VM.
+      - Use the Multipass CLI syntax C(<host>:<instance>).
+      - File and folder ownership will be mapped from <host> to <instance> inside the VM.
     type: list
     elements: str
     default: []
   uid_map:
     description:
       - A list of user IDs mapping for use in the mount.
-      - Use the Multipass CLI syntax: C(<host>:<instance>).
-        File and folder ownership will be mapped from <host> to <instance> inside the VM.
+      - Use the Multipass CLI syntax C(<host>:<instance>).
+      - File and folder ownership will be mapped from <host> to <instance> inside the VM.
     type: list
     elements: str
     default: []
@@ -154,7 +154,7 @@ EXAMPLES = '''
     source: /root/data
     target: /tmp
     state: present
-    type: native
+    type: classic
     uid_map:
       - "50:50"
       - "1000:1000"
