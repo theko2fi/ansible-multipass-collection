@@ -1,0 +1,126 @@
+---
+
+- name: Ensure that VM doesn't exist
+  theko2fi.multipass.multipass_vm:
+    name: "zobosky"
+    state: absent
+    purge: true
+
+- name: Ensure that mount source folder exists
+  ansible.builtin.file:
+    path: "/root/tmp/testmount2"
+    state: directory
+
+- name: Mount directories to multipass VM
+  theko2fi.multipass.multipass_vm:
+    name: "zobosky"
+    state: present
+    mounts:
+      - source: "/root/tmp/testmount2"
+        target: "/tmpyy"
+        gid_map: ["50:50","500:25"]
+        uid_map: ["1000:1000"]
+      - source: "/tmp"
+        target: "/tmpxx"
+  register: create_vm_with_mounts
+
+- name: Verify that VM has been created with mounts
+  ansible.builtin.assert:
+    that:
+      - create_vm_with_mounts.changed
+      - "'/tmpxx' in create_vm_with_mounts.result.info.zobosky.mounts"
+      - "'/tmpyy' in create_vm_with_mounts.result.info.zobosky.mounts"
+      - create_vm_with_mounts.result.info.zobosky.mounts['/tmpyy'].gid_mappings == ["50:50","500:25"]
+      - create_vm_with_mounts.result.info.zobosky.mounts['/tmpyy'].uid_mappings == ["1000:1000"]
+
+- name: Reduce gid_map
+  theko2fi.multipass.multipass_vm:
+    name: "zobosky"
+    state: present
+    mounts:
+      - source: "/root/tmp/testmount2"
+        target: "/tmpyy"
+        gid_map: ["50:50"]
+        uid_map: ["1000:1000"]
+      - source: "/tmp"
+        target: "/tmpxx"
+  register: reduce_gid_map
+
+- name: Verify that gid_map reduced
+  ansible.builtin.assert:
+    that:
+      - reduce_gid_map.changed
+      - reduce_gid_map.result.info.zobosky.mounts['/tmpyy'].gid_mappings == ["50:50"]
+
+- name: Remove uid_map
+  theko2fi.multipass.multipass_vm:
+    name: "zobosky"
+    state: present
+    mounts:
+      - source: "/root/tmp/testmount2"
+        target: "/tmpyy"
+        gid_map: ["50:50"]
+      - source: "/tmp"
+        target: "/tmpxx"
+  register: remove_uid_map
+
+- name: Verify that uid_map reverted to default
+  ansible.builtin.assert:
+    that:
+      - remove_uid_map.changed
+      - remove_uid_map.result.info.zobosky.mounts['/tmpyy'].uid_mappings == ["0:default"]
+
+- name: change '/tmpxx' mount point to '/tmpzz'
+  theko2fi.multipass.multipass_vm:
+    name: "zobosky"
+    state: present
+    mounts:
+      - source: "/root/tmp/testmount2"
+        target: "/tmpyy"
+        gid_map: ["50:50"]
+      - source: "/tmp"
+        target: "/tmpzz"
+  register: change_mount_point
+
+- name: Verify that '/tmpxx' changed to '/tmpzz'
+  ansible.builtin.assert:
+    that:
+      - change_mount_point.changed
+      - "'/tmpxx' not in change_mount_point.result.info.zobosky.mounts"
+      - change_mount_point.result.info.zobosky.mounts['/tmpzz'].source_path == "/tmp"
+
+- name: Remove one mount point
+  theko2fi.multipass.multipass_vm:
+    name: "zobosky"
+    state: present
+    mounts:
+      - source: "/tmp"
+        target: "/tmpzz"
+  register: remove_one_mount_point
+
+- name: Verify that '/tmpyy' mount point has been removed
+  ansible.builtin.assert:
+    that:
+      - remove_one_mount_point.changed
+      - "'/tmpyy' not in remove_one_mount_point.result.info.zobosky.mounts"
+
+- name: Remove one mount point (check idempotency)
+  theko2fi.multipass.multipass_vm:
+    name: "zobosky"
+    state: present
+    mounts:
+      - source: "/tmp"
+        target: "/tmpzz"
+  register: remove_one_mount_point_idempotency
+
+
+- name: Verify that '/tmpyy' mount point has been removed (idempotency)
+  ansible.builtin.assert:
+    that:
+      - remove_one_mount_point_idempotency.changed == False
+
+- name: Delete and purge VM
+  theko2fi.multipass.multipass_vm:
+    name: "zobosky"
+    state: absent
+    purge: true
