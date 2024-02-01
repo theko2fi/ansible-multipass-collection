@@ -36,6 +36,12 @@ jobs:
       - name: Install Multipass
         run: sudo snap install multipass
 
+      - name: Check KVM
+        run: sudo kvm-ok
+
+      - name: Launch Multipass VM
+        run: multipass launch -vvv
+
       - name: Install Ansible
         run: pip3 install ansible
 
