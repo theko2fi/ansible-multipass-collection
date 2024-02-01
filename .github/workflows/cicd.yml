@@ -39,6 +39,9 @@ jobs:
       - name: Check KVM
         run: sudo kvm-ok
 
+      - name: Check snap services
+        run: snap services
+
       - name: Launch Multipass VM
         run: multipass launch -vvv
 
