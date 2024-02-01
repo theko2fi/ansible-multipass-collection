@@ -30,7 +30,7 @@ jobs:
           python-version: '3.10'
 
       - name: Install Multipass
-        run: snap install multipass
+        run: sudo snap install multipass
 
       - name: Install Ansible
         run: pip3 install ansible
