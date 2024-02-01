@@ -36,8 +36,8 @@ jobs:
       - name: Install Multipass
         run: sudo snap install multipass
 
-      - name: Install multipass socket
-        run: sudo snap install multipass_socket
+      - name: check multipass log
+        run: cat /var/log/syslog|grep multipass
 
       - name: Check KVM
         run: sudo kvm-ok
