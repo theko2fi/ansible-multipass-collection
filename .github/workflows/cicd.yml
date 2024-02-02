@@ -33,6 +33,9 @@ jobs:
           sudo apt update
           sudo apt install -y qemu-kvm
 
+      - name: Install resolvconf
+        run: sudo apt install --reinstall resolvconf -y
+
       - name: Install Multipass socket
         run: |
           sudo snap set system experimental.parallel-instances=true
