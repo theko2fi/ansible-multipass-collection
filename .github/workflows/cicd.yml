@@ -33,6 +33,11 @@ jobs:
           sudo apt update
           sudo apt install -y qemu-kvm
 
+      - name: Install Multipass socket
+        run: |
+          sudo snap set system experimental.parallel-instances=true
+          sudo snap install multipass_socket
+
       - name: Install Multipass
         run: sudo snap install multipass
 
