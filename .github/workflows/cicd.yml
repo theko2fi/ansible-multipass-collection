@@ -74,4 +74,4 @@ jobs:
       - name: Run ansible-test
         run: |
           cd ~/.ansible/collections/ansible_collections/theko2fi/multipass
-          ansible-test integration ${{ matrix.target }}
+          ansible-test integration multipass_vm
