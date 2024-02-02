@@ -45,6 +45,9 @@ jobs:
       - name: Check snap services
         run: snap services
 
+      - name: Check Multipass service
+        run: sudo systemctl status snap.multipass.multipassd
+
       - name: Launch Multipass VM
         run: multipass launch -vvv
 
