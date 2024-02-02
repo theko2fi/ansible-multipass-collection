@@ -48,6 +48,12 @@ jobs:
       - name: Check Multipass service
         run: sudo systemctl status snap.multipass.multipassd
 
+      - name: Restart multipass service
+        run: sudo snap restart multipass.multipassd
+
+      - name: Check socket file
+        run: sudo ls -ld /var/snap/multipass/common/multipass_socket
+
       - name: Launch Multipass VM
         run: multipass launch -vvv
 
