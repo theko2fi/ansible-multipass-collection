@@ -53,6 +53,9 @@ jobs:
       - name: Check snap services
         run: snap services
 
+      - name: multipass --channel edge
+        run: sudo snap refresh multipass --channel edge
+
       - name: Check Multipass service
         run: sudo systemctl status snap.multipass.multipassd
 
