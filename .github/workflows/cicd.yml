@@ -38,6 +38,7 @@ jobs:
           - multipass_vm_info
           - multipass_vm_purge
           - multipass_vm_transfer_into
+          - multipass_mount
         exclude:
           - target: connection_multipass
     steps:
