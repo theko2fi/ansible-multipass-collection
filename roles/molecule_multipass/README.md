@@ -1,38 +1,30 @@
-Role Name
-=========
+Molecule Multipass driver
+=========================
 
-A brief description of the role goes here.
+Multipass driver for Molecule.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+This role requires the following tools to be installed:
+- [multipass](https://multipass.run/)
+- [molecule](https://ansible.readthedocs.io/projects/molecule/)
 
-Role Variables
---------------
+How to use?
+-----------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
-
-Dependencies
-------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
-
-Example Playbook
-----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+This section is being written. Coming soon...
 
 License
 -------
 
-BSD
+GNU General Public License v3.0 or later
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Created by Kenneth KOFFI, you can reach him on the following platforms:
+- medium: https://theko2fi.medium.com
+- github: https://github.com/theko2fi
+- linkedin: https://www.linkedin.com/in/kenneth-koffi-6b1218178
+
