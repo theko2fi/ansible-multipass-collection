@@ -1,8 +1,0 @@
----
-- name: Create a new molecule scenario
-  hosts: localhost
-  connection: local
-  remote_user: root
-  gather_facts: false
-  roles:
-    - theko2fi.multipass.molecule_multipass
