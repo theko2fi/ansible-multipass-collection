@@ -1,3 +1,0 @@
----
-# defaults file for theko2fi.multipass.molecule
-dest: "{{ ('molecule/' + (scenario_name | default('default'))) | realpath }}"
