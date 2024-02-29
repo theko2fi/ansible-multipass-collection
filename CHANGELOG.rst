@@ -5,6 +5,27 @@ Theko2Fi.Multipass Release Notes
 .. contents:: Topics
 
 
+v0.3.0
+======
+
+Release Summary
+---------------
+
+Release Date: 2024-02-29
+
+The collection now contains module and option to manage directory mapping between host and Multipass virtual machines.
+
+
+Minor Changes
+-------------
+
+- multipass_vm - add ``mount`` option which allows to mount host directories inside multipass instances.
+
+New Modules
+-----------
+
+- theko2fi.multipass.multipass_mount - Module to manage directory mapping between host and Multipass virtual machine
+
 v0.2.3
 ======
 

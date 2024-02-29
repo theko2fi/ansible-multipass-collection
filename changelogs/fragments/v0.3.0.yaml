@@ -1,0 +1,6 @@
+release_summary: |
+  Release Date: 2024-02-29
+
+  The collection now contains module and option to manage directory mapping between host and Multipass virtual machines.
+minor_changes:
+  - multipass_vm - add ``mount`` option which allows to mount host directories inside multipass instances.
