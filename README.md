@@ -22,6 +22,8 @@ Please note that this collection is **not** developed by [Canonical](https://can
     - [multipass_vm_transfer_into](https://theko2fi.github.io/ansible-multipass-collection/branch/main/multipass_vm_transfer_into_module.html) - Module to copy a file into a Multipass virtual machine
     - [multipass_config_get](https://theko2fi.github.io/ansible-multipass-collection/branch/main/multipass_config_get_module.html) - Module to get Multipass configuration setting
     - [multipass_mount](https://theko2fi.github.io/ansible-multipass-collection/branch/main/multipass_mount_module.html) - Module to manage directory mapping between host and Multipass virtual machines
+* Roles:
+    - molecule_multipass - Molecule Multipass driver 
 
 ## Installation
 
