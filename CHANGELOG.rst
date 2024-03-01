@@ -16,9 +16,13 @@ Release Date: 2024-02-29
 The collection now contains module and option to manage directory mapping between host and Multipass virtual machines.
 
 
+It also contains a Multipass driver for Molecule which allow to use Multipass instances for provisioning test resources.
+
+
 Minor Changes
 -------------
 
+- molecule_multipass - a Multipass driver for Molecule.
 - multipass_vm - add ``mount`` option which allows to mount host directories inside multipass instances.
 
 New Modules
