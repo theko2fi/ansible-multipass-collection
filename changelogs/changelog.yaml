@@ -70,3 +70,29 @@ releases:
     fragments:
     - v0.2.3.yaml
     release_date: '2024-01-05'
+  0.3.0:
+    changes:
+      minor_changes:
+      - molecule_multipass - a Multipass driver for Molecule.
+      - multipass_vm - add ``mount`` option which allows to mount host directories
+        inside multipass instances.
+      release_summary: 'Release Date: 2024-02-29
+
+
+        The collection now contains module and option to manage directory mapping
+        between host and Multipass virtual machines.
+
+
+
+        It also contains a Multipass driver for Molecule which allow to use Multipass
+        instances for provisioning test resources.
+
+        '
+    fragments:
+    - v0.3.0.yaml
+    modules:
+    - description: Module to manage directory mapping between host and Multipass virtual
+        machine
+      name: multipass_mount
+      namespace: ''
+    release_date: '2024-03-01'

@@ -1,4 +1,9 @@
 ---
+- name: Ensure multipass VM named zazilapus doesn't exist
+  theko2fi.multipass.multipass_vm:
+    name: "zazilapus"
+    state: absent
+    purge: true
 
 - name: Create a multipass VM
   theko2fi.multipass.multipass_vm:
@@ -130,3 +135,6 @@
   ansible.builtin.assert:
     that:
       - repurge_vm.changed == False
+
+- name: Include mount tests
+  ansible.builtin.import_tasks: mount.yml

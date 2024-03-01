@@ -1,0 +1,15 @@
+---
+dependency:
+  name: galaxy
+driver:
+  options:
+    managed: False
+    login_cmd_template: 'multipass exec {instance} -- bash'
+    ansible_connection_options:
+      ansible_connection: theko2fi.multipass.multipass
+platforms:
+  - name: instance-molecule
+provisioner:
+  name: ansible
+verifier:
+  name: ansible

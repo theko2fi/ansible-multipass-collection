@@ -8,3 +8,5 @@ github_action_key*
 dfdf.json
 test-playbook.yml
 changelogs/.plugin-cache.yaml
+plugins/modules/__pycache__/
+ansible.cfg
