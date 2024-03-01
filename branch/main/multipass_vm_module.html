@@ -2,7 +2,7 @@
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<meta content="2.6.1" name="antsibull-docs" />
+<meta content="2.7.0" name="antsibull-docs" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>theko2fi.multipass.multipass_vm module – Module to manage Multipass VM &mdash; Theko2fi.Multipass Collection  documentation</title>
@@ -22,10 +22,11 @@
         <script src="_static/documentation_options.js?v=7f41d439"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-website-id="0086c656-f41e-4131-ac3f-59bf72b1c4d8" defer="defer" src="https://eu.umami.is/script.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="theko2fi.multipass.multipass_vm_exec module – Execute command in a Multipass virtual machine" href="multipass_vm_exec_module.html" />
-    <link rel="prev" title="theko2fi.multipass.multipass_config_get module – Get Multipass configuration setting" href="multipass_config_get_module.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
+    <link rel="prev" title="theko2fi.multipass.multipass_mount module – Module to manage directory mapping between host and Multipass virtual machine" href="multipass_mount_module.html" /><!-- extra head elements for Ansible beyond RTD Sphinx Theme -->
 
 
 
@@ -77,6 +78,7 @@
   
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="multipass_config_get_module.html">theko2fi.multipass.multipass_config_get module – Get Multipass configuration setting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multipass_mount_module.html">theko2fi.multipass.multipass_mount module – Module to manage directory mapping between host and Multipass virtual machine</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">theko2fi.multipass.multipass_vm module – Module to manage Multipass VM</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#synopsis">Synopsis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#parameters">Parameters</a></li>
@@ -127,7 +129,7 @@
 <h1>theko2fi.multipass.multipass_vm module – Module to manage Multipass VM<a class="headerlink" href="#theko2fi-multipass-multipass-vm-module-module-to-manage-multipass-vm" title="Link to this heading"></a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This module is part of the <a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/theko2fi/multipass/">theko2fi.multipass collection</a> (version 0.2.3).</p>
+<p>This module is part of the <a class="reference external" href="https://galaxy.ansible.com/ui/repo/published/theko2fi/multipass/">theko2fi.multipass collection</a> (version 0.3.0).</p>
 <p>It is not included in <code class="docutils literal notranslate"><span class="pre">ansible-core</span></code>.
 To check whether it is installed, run <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">list</span></code>.</p>
 <p>To install it, use: <code class="code docutils literal notranslate"><span class="pre">ansible-galaxy</span> <span class="pre">collection</span> <span class="pre">install</span> <span class="pre">theko2fi.multipass</span></code>.</p>
@@ -195,6 +197,62 @@ To check whether it is installed, run <code class="code docutils literal notrans
 </div></td>
 <td><div class="ansible-option-cell"><p>The amount of RAM to allocate to the VM.</p>
 <p class="ansible-option-line"><strong class="ansible-option-default-bold">Default:</strong> <code class="ansible-option-default docutils literal notranslate"><span class="pre">&quot;1G&quot;</span></code></p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-mounts"></div><p class="ansible-option-title" id="ansible-collections-theko2fi-multipass-multipass-vm-module-parameter-mounts"><strong>mounts</strong></p>
+<a class="ansibleOptionLink" href="#parameter-mounts" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=dictionary</span></p>
+<p><em class="ansible-option-versionadded">added in theko2fi.multipass 0.3.0</em></p>
+</div></td>
+<td><div class="ansible-option-cell"><p>Specification for mounts to be added to the VM.</p>
+<p>Omitting a mount that is currently applied to a VM will remove it.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-mounts/gid_map"></div><p class="ansible-option-title" id="ansible-collections-theko2fi-multipass-multipass-vm-module-parameter-mounts-gid-map"><strong>gid_map</strong></p>
+<a class="ansibleOptionLink" href="#parameter-mounts/gid_map" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A list of group IDs mapping for use in the mount.</p>
+<p>Use the Multipass CLI syntax <code class="docutils literal notranslate"><span class="pre">&lt;host&gt;:&lt;instance&gt;</span></code>. File and folder ownership will be mapped from &lt;host&gt; to &lt;instance&gt; inside the VM.</p>
+<p>Omitting an gid_map that is currently applied to a mount, will remove it.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-mounts/source"></div><p class="ansible-option-title" id="ansible-collections-theko2fi-multipass-multipass-vm-module-parameter-mounts-source"><strong>source</strong></p>
+<a class="ansibleOptionLink" href="#parameter-mounts/source" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span> / <span class="ansible-option-required">required</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Path of the local directory to mount.</p>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-mounts/target"></div><p class="ansible-option-title" id="ansible-collections-theko2fi-multipass-multipass-vm-module-parameter-mounts-target"><strong>target</strong></p>
+<a class="ansibleOptionLink" href="#parameter-mounts/target" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>target mount point (path inside the VM).</p>
+<p>If omitted, the mount point will be the same as the source’s absolute path.</p>
+</div></td>
+</tr>
+<tr class="row-odd"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-mounts/type"></div><p class="ansible-option-title" id="ansible-collections-theko2fi-multipass-multipass-vm-module-parameter-mounts-type"><strong>type</strong></p>
+<a class="ansibleOptionLink" href="#parameter-mounts/type" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>Specify the type of mount to use.</p>
+<p><code class="ansible-value docutils literal notranslate"><span class="pre">classic</span></code> mounts use technology built into Multipass.</p>
+<p><code class="ansible-value docutils literal notranslate"><span class="pre">native</span></code> mounts use hypervisor and/or platform specific mounts.</p>
+<p class="ansible-option-line"><strong class="ansible-option-choices">Choices:</strong></p>
+<ul class="simple">
+<li><p><code class="ansible-option-default-bold docutils literal notranslate"><strong><span class="pre">&quot;classic&quot;</span></strong></code> <span class="ansible-option-choices-default-mark">← (default)</span></p></li>
+<li><p><code class="ansible-option-choices-entry docutils literal notranslate"><span class="pre">&quot;native&quot;</span></code></p></li>
+</ul>
+</div></td>
+</tr>
+<tr class="row-even"><td><div class="ansible-option-indent"></div><div class="ansible-option-cell">
+<div class="ansibleOptionAnchor" id="parameter-mounts/uid_map"></div><p class="ansible-option-title" id="ansible-collections-theko2fi-multipass-multipass-vm-module-parameter-mounts-uid-map"><strong>uid_map</strong></p>
+<a class="ansibleOptionLink" href="#parameter-mounts/uid_map" title="Permalink to this option"></a><p class="ansible-option-type-line"><span class="ansible-option-type">list</span> / <span class="ansible-option-elements">elements=string</span></p>
+</div></td>
+<td><div class="ansible-option-indent-desc"></div><div class="ansible-option-cell"><p>A list of user IDs mapping for use in the mount.</p>
+<p>Use the Multipass CLI syntax <code class="docutils literal notranslate"><span class="pre">&lt;host&gt;:&lt;instance&gt;</span></code>. File and folder ownership will be mapped from &lt;host&gt; to &lt;instance&gt; inside the VM.</p>
+<p>Omitting an uid_map that is currently applied to a mount, will remove it.</p>
 </div></td>
 </tr>
 <tr class="row-odd"><td><div class="ansible-option-cell">
@@ -312,7 +370,7 @@ To check whether it is installed, run <code class="code docutils literal notrans
 <p>Empty if <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-theko2fi-multipass-multipass-vm-module-parameter-state"><span class="std std-ref"><span class="pre">state=absent</span></span></a></code> or <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-theko2fi-multipass-multipass-vm-module-parameter-state"><span class="std std-ref"><span class="pre">state=stopped</span></span></a></code>.</p>
 <p>Will be <code class="ansible-value docutils literal notranslate"><span class="pre">none</span></code> if virtual machine does not exist.</p>
 <p class="ansible-option-line"><strong class="ansible-option-returned-bold">Returned:</strong> success; or when <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-theko2fi-multipass-multipass-vm-module-parameter-state"><span class="std std-ref"><span class="pre">state=started</span></span></a></code> or <code class="ansible-option-value docutils literal notranslate"><a class="reference internal" href="#ansible-collections-theko2fi-multipass-multipass-vm-module-parameter-state"><span class="std std-ref"><span class="pre">state=present</span></span></a></code>, and when waiting for the VM result did not fail</p>
-<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">{&quot;errors&quot;:</span> <span class="pre">[],</span> <span class="pre">&quot;info&quot;:</span> <span class="pre">{&quot;foo&quot;:</span> <span class="pre">{&quot;cpu_count&quot;:</span> <span class="pre">&quot;1&quot;,</span> <span class="pre">&quot;disks&quot;:</span> <span class="pre">{&quot;sda1&quot;:</span> <span class="pre">{&quot;total&quot;:</span> <span class="pre">&quot;5120710656&quot;,</span> <span class="pre">&quot;used&quot;:</span> <span class="pre">&quot;2200540672&quot;}},</span> <span class="pre">&quot;image_hash&quot;:</span> <span class="pre">&quot;fe102bfb3d3d917d31068dd9a4bd8fcaeb1f529edda86783f8524fdc1477ee29&quot;,</span> <span class="pre">&quot;image_release&quot;:</span> <span class="pre">&quot;22.04</span> <span class="pre">LTS&quot;,</span> <span class="pre">&quot;ipv4&quot;:</span> <span class="pre">[&quot;172.23.240.92&quot;],</span> <span class="pre">&quot;load&quot;:</span> <span class="pre">[0.01,</span> <span class="pre">0.01,</span> <span class="pre">0],</span> <span class="pre">&quot;memory&quot;:</span> <span class="pre">{&quot;total&quot;:</span> <span class="pre">935444480,</span> <span class="pre">&quot;used&quot;:</span> <span class="pre">199258112},</span> <span class="pre">&quot;mounts&quot;:</span> <span class="pre">{},</span> <span class="pre">&quot;release&quot;:</span> <span class="pre">&quot;Ubuntu</span> <span class="pre">22.04.2</span> <span class="pre">LTS&quot;,</span> <span class="pre">&quot;state&quot;:</span> <span class="pre">&quot;Running&quot;}}}</span></code></p>
+<p class="ansible-option-line ansible-option-sample"><strong class="ansible-option-sample-bold">Sample:</strong> <code class="ansible-option-sample docutils literal notranslate"><span class="pre">{&quot;errors&quot;:</span> <span class="pre">[],</span> <span class="pre">&quot;info&quot;:</span> <span class="pre">{&quot;foo&quot;:</span> <span class="pre">{&quot;cpu_count&quot;:</span> <span class="pre">&quot;1&quot;,</span> <span class="pre">&quot;disks&quot;:</span> <span class="pre">{&quot;sda1&quot;:</span> <span class="pre">{&quot;total&quot;:</span> <span class="pre">&quot;5120710656&quot;,</span> <span class="pre">&quot;used&quot;:</span> <span class="pre">&quot;2200540672&quot;}},</span> <span class="pre">&quot;image_hash&quot;:</span> <span class="pre">&quot;fe102bfb3d3d917d31068dd9a4bd8fcaeb1f529edda86783f8524fdc1477ee29&quot;,</span> <span class="pre">&quot;image_release&quot;:</span> <span class="pre">&quot;22.04</span> <span class="pre">LTS&quot;,</span> <span class="pre">&quot;ipv4&quot;:</span> <span class="pre">[&quot;172.23.240.92&quot;],</span> <span class="pre">&quot;load&quot;:</span> <span class="pre">[0.01,</span> <span class="pre">0.01,</span> <span class="pre">0],</span> <span class="pre">&quot;memory&quot;:</span> <span class="pre">{&quot;total&quot;:</span> <span class="pre">935444480,</span> <span class="pre">&quot;used&quot;:</span> <span class="pre">199258112},</span> <span class="pre">&quot;mounts&quot;:</span> <span class="pre">{&quot;/home/ubuntu/data&quot;:</span> <span class="pre">{&quot;gid_mappings&quot;:</span> <span class="pre">[&quot;0:default&quot;],</span> <span class="pre">&quot;source_path&quot;:</span> <span class="pre">&quot;/tmp&quot;,</span> <span class="pre">&quot;uid_mappings&quot;:</span> <span class="pre">[&quot;0:default&quot;]}},</span> <span class="pre">&quot;release&quot;:</span> <span class="pre">&quot;Ubuntu</span> <span class="pre">22.04.2</span> <span class="pre">LTS&quot;,</span> <span class="pre">&quot;state&quot;:</span> <span class="pre">&quot;Running&quot;}}}</span></code></p>
 </div></td>
 </tr>
 </tbody>
@@ -339,7 +397,7 @@ To check whether it is installed, run <code class="code docutils literal notrans
           
 
 <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="multipass_config_get_module.html" class="btn btn-neutral float-left" title="theko2fi.multipass.multipass_config_get module – Get Multipass configuration setting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="multipass_mount_module.html" class="btn btn-neutral float-left" title="theko2fi.multipass.multipass_mount module – Module to manage directory mapping between host and Multipass virtual machine" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="multipass_vm_exec_module.html" class="btn btn-neutral float-right" title="theko2fi.multipass.multipass_vm_exec module – Execute command in a Multipass virtual machine" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
