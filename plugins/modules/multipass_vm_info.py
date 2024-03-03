@@ -10,16 +10,22 @@ __metaclass__ = type
 from ansible.module_utils.common.text.converters import to_native
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import MultipassClient 
+from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import Multipass 
 
 
 def main():
-  module = AnsibleModule(argument_spec=dict(name = dict(required=True, type='str')))
+  module = AnsibleModule(
+    argument_spec=dict(
+      name = dict(required=True, type='str'),
+      multipass_host = dict(required=False, type='str', default='')
+      )
+    )
   
   vm_name = module.params.get('name')
 
   try:
-    vm = MultipassClient().get_vm(vm_name=vm_name)
+    multipassclient = Multipass(multipass_host=module.params.get('multipass_host')).create_client()
+    vm = multipassclient.get_vm(vm_name=vm_name)
     module.exit_json(
       changed=False,
       exists=True,

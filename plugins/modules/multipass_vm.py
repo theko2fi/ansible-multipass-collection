@@ -5,15 +5,12 @@
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import MultipassClient, get_existing_mounts
+from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import Multipass, get_existing_mounts
 import os, sys
 
 
-multipassclient = MultipassClient()
-
-
 class AnsibleMultipassVM:
-    def __init__(self, name):
+    def __init__(self, name, multipassclient):
         self.name = name
         self.vm = multipassclient.get_vm(vm_name=name)
 
@@ -98,7 +95,8 @@ def main():
                 gid_map=dict(type='list', elements='str'),
                 uid_map=dict(type='list', elements='str')
                 )
-            )
+            ),
+            multipass_host = dict(required=False, type='str', default='')
         )
     )
 
@@ -110,9 +108,11 @@ def main():
     disk = module.params.get('disk')
     cloud_init = module.params.get('cloud_init')
     purge = module.params.get('purge')
-    mounts = module.params.get('mounts')
+    mounts = module.params.get('mounts') 
 
-    ansible_multipass = AnsibleMultipassVM(vm_name)
+    multipassclient = Multipass(multipass_host=module.params.get('multipass_host')).create_client()
+
+    ansible_multipass = AnsibleMultipassVM(vm_name, multipassclient)
 
     if state in ('present', 'started'):
         try:
@@ -167,7 +167,7 @@ def main():
                 if is_different:
                     changed = True
                     for target_path in target_paths_only_in_existing_mounts:
-                        MultipassClient().umount(mount=f"{vm_name}:{target_path}")
+                        multipassclient.umount(mount=f"{vm_name}:{target_path}")
 
                     for target_path in target_paths_only_in_expected_mounts:
                         source_path = expected_mounts.get(target_path).get("source_path")
@@ -177,7 +177,7 @@ def main():
                         uid_mappings_cleaned = [uid_mapping for uid_mapping in uid_mappings if not "default" in uid_mapping]
                         gid_mappings_cleaned = [gid_mapping for gid_mapping in gid_mappings if not "default" in gid_mapping]
 
-                        MultipassClient().mount(
+                        multipassclient.mount(
                             src=source_path,
                             target=f"{vm_name}:{target_path}",
                             uid_maps=uid_mappings_cleaned,
@@ -185,7 +185,7 @@ def main():
                             )
 
                     for target_path in different_mounts:
-                        MultipassClient().umount(mount=f"{vm_name}:{target_path}")
+                        multipassclient.umount(mount=f"{vm_name}:{target_path}")
 
                         source_path = expected_mounts.get(target_path).get("source_path")
                         uid_mappings = expected_mounts.get(target_path).get("uid_mappings")
@@ -194,7 +194,7 @@ def main():
                         uid_mappings_cleaned = [uid_mapping for uid_mapping in uid_mappings if not "default" in uid_mapping]
                         gid_mappings_cleaned = [gid_mapping for gid_mapping in gid_mappings if not "default" in gid_mapping]
 
-                        MultipassClient().mount(
+                        multipassclient.mount(
                             src=source_path,
                             target=f"{vm_name}:{target_path}",
                             uid_maps=uid_mappings_cleaned,
