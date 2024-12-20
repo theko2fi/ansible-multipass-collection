@@ -91,6 +91,12 @@ def main():
             state = dict(required=False, type=str, default='present'),
             recreate = dict(required=False, type=bool, default=False),
             purge = dict(required=False, type=bool, default=False),
+            networks = dict(type='list', elements='dict', suboptions=dict(
+                name=dict(type='str', required=True),
+                mode=dict(type='str', choices=['auto', 'manual'], default='auto'),
+                mac=dict(type='str'),
+                )
+            ),
             mounts = dict(type='list', elements='dict', suboptions=dict(
                 target=dict(type='str'),
                 source=dict(type='str', required=True),
@@ -105,6 +111,7 @@ def main():
     vm_name = module.params.get('name')
     image = module.params.get('image')
     cpus = module.params.get('cpus')
+    networks = module.params.get('networks')
     state = module.params.get('state')
     memory = module.params.get('memory')
     disk = module.params.get('disk')
@@ -123,6 +130,7 @@ def main():
                     image=image,
                     cpu=cpus,
                     mem=memory,
+                    networks=networks,
                     disk=disk,
                     cloud_init=cloud_init
                     )
@@ -153,6 +161,7 @@ def main():
                         image=image,
                         cpu=cpus,
                         mem=memory,
+                        networks=networks,
                         disk=disk,
                         cloud_init=cloud_init
                         )
@@ -263,6 +272,32 @@ options:
     description: The number of CPUs of the VM.
     required: false
     type: int
+  networks:
+    description: A list of networks to be used in the VM specification.
+    required: false
+    elements: dict
+    type: list
+    suboptions:
+      name:
+        type: str
+        description:
+          - Name of the host network to connect the instance's device to 
+        required: true
+      mode:
+        type: str
+        description:
+          - Network mode
+          - If it's C('auto') the VM will attempt to configure the network automatically.
+        required: false
+        default: auto
+        choices:
+          - auto
+          - manual
+      mac:
+        type: str
+        description:
+          - Custom MAC address to use for the device.
+        required: false
   memory:
     description: The amount of RAM to allocate to the VM.
     required: false
@@ -372,6 +407,21 @@ EXAMPLES = '''
     cpus: 2
     memory: 2G
     disk: 5G
+    networks:
+      - name: en0
+
+- name: Create a VM with multiple networks
+  theko2fi.multipass.multipass_vm:
+    name: foo
+    cpus: 2
+    memory: 2G
+    disk: 5G
+    networks:
+      - name: en0
+      - name: bridge0
+        mode: manual
+        mac: '50:b3:41:6c:83:cd'
+
 
 - name: Stop a VM
   theko2fi.multipass.multipass_vm:

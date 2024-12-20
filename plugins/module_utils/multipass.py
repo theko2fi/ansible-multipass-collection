@@ -120,7 +120,7 @@ class MultipassClient:
     def __init__(self, multipass_cmd="multipass"):
         self.cmd = multipass_cmd
 
-    def launch(self, vm_name=None, cpu=1, disk="5G", mem="1G", image=None, cloud_init=None):
+    def launch(self, vm_name=None, cpu=1, disk="5G", mem="1G", networks=[], image=None, cloud_init=None):
         if(not vm_name):
             # similar to Multipass's VM name generator
             vm_name = Haikunator().haikunate(token_length=0)
@@ -128,6 +128,18 @@ class MultipassClient:
         if(cloud_init):
             cmd.append("--cloud-init")
             cmd.append(cloud_init)
+        for network in networks:
+            network_str = f"name={network['name']}"
+
+            # Add optional parameters if they exist
+            if 'mode' in network and network['mode']:
+                network_str += f",mode={network['mode']}"
+
+            if 'mac' in network and network['mac']:
+                network_str += f",mac={network['mac']}"
+
+            cmd.append("--network")
+            cmd.append(network_str)
         if(image and not image == "ubuntu-lts"):
             cmd.append(image)
         try:
