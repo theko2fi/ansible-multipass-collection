@@ -4,14 +4,13 @@
 # Copyright 2023 Kenneth KOFFI (@theko2fi)
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import AnsibleModule, env_fallback
 from ansible.errors import AnsibleError
-from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import MultipassClient, get_existing_mounts
+from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import Multipass
 from ansible_collections.theko2fi.multipass.plugins.module_utils.errors import  MountExistsError, MountNonExistentError
 
 
 
-multipassclient = MultipassClient()
 
 
 def main():
@@ -23,7 +22,8 @@ def main():
             state = dict(required=False, type=str, default='present', choices=['present','absent']),
             type = dict(type='str', required=False, default='classic', choices=['classic','native']),
             gid_map = dict(type='list', elements='str', required=False, default=[]),
-            uid_map = dict(type='list', elements='str', required=False, default=[])
+            uid_map = dict(type='list', elements='str', required=False, default=[]),
+            multipass_host = dict(type='str',fallback=(env_fallback, ['MULTIPASS_HOST']), aliases=['multipass_url'])
         ),
         required_if = [('state', 'present', ['source'])]
     )
@@ -35,21 +35,23 @@ def main():
     gid_map = module.params.get('gid_map')
     uid_map = module.params.get('uid_map')
     mount_type = module.params.get('type')
-    
+
+    multipassclient = Multipass(multipass_host=module.params.get('multipass_host')).create_client()
+
     if state in ('present'):
         dest = dest or src
         target = f"{vm_name}:{dest}"
         try:
             multipassclient.mount(src=src, target=target, uid_maps=uid_map, gid_maps=gid_map, mount_type=mount_type )
-            module.exit_json(changed=True, result=get_existing_mounts(vm_name).get(dest))
+            module.exit_json(changed=True, result=multipassclient.get_existing_mounts(vm_name).get(dest))
         except MountExistsError:
-            module.exit_json(changed=False, result=get_existing_mounts(vm_name).get(dest))
+            module.exit_json(changed=False, result=multipassclient.get_existing_mounts(vm_name).get(dest))
         except Exception as e:
             module.fail_json(msg=str(e))
     else:
         target = f"{vm_name}:{dest}" if dest else vm_name
         try:
-            changed = False if not get_existing_mounts(vm_name=vm_name) else True
+            changed = False if not multipassclient.get_existing_mounts(vm_name=vm_name) else True
             multipassclient.umount(mount=target)
             module.exit_json(changed=changed)
         except MountNonExistentError:
@@ -71,6 +73,8 @@ description:
   - Mount a local directory in a Multipass virtual machine.
   - Unmount a directory from a Multipass virtual machine.
 version_added: 0.3.0
+extends_documentation_fragment:
+  - theko2fi.multipass.multipass.api_documentation
 options:
   name:
     type: str
