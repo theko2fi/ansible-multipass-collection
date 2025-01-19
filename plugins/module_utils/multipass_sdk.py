@@ -210,3 +210,6 @@ class MultipassClientSDK:
         # remove trailing "\r\n" when returning the stdout
         return stdout.rstrip()
     
+    def get_existing_mounts(self, vm_name):
+        vm = self.get_vm(vm_name)
+        return vm.info().get('info').get(vm_name).get("mounts")
