@@ -8,20 +8,23 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 from ansible.module_utils.common.text.converters import to_native
-from ansible.module_utils.basic import AnsibleModule  
-from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import MultipassClient
+from ansible.module_utils.basic import AnsibleModule , env_fallback
+from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import Multipass
 
 
 def main():
-  module = AnsibleModule(argument_spec=dict(
-    key = dict(required=True, type='str')
+  module = AnsibleModule(
+    argument_spec=dict(
+      key = dict(required=True, type='str'),
+      multipass_host = dict(type='str',fallback=(env_fallback, ['MULTIPASS_HOST']), aliases=['multipass_url'])
     )
   )
   
   key = module.params.get('key')
+  multipassclient = Multipass(multipass_host=module.params.get('multipass_host')).create_client()
 
   try:
-    output = MultipassClient().get(key=key)
+    output = multipassclient.get(key=key)
     module.exit_json(changed=False, result=output)
   except Exception as e:
     module.fail_json(msg='An unexpected error occurred: {0}'.format(to_native(e)))
