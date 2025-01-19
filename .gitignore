@@ -10,3 +10,6 @@ test-playbook.yml
 changelogs/.plugin-cache.yaml
 plugins/modules/__pycache__/
 ansible.cfg
+plugins/module_utils/haikunator/__pycache__/
+plugins/module_utils/brouillon.py
+tests/brouillon.yml
