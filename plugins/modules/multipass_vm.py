@@ -5,7 +5,7 @@
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from ansible.module_utils.basic import AnsibleModule, env_fallback
-from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import Multipass, get_existing_mounts
+from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import Multipass
 import os, sys
 
 
@@ -108,7 +108,7 @@ def main():
     disk = module.params.get('disk')
     cloud_init = module.params.get('cloud_init')
     purge = module.params.get('purge')
-    mounts = module.params.get('mounts') 
+    mounts = module.params.get('mounts')
 
     multipassclient = Multipass(multipass_host=module.params.get('multipass_host')).create_client()
 
@@ -160,7 +160,7 @@ def main():
                     #module.exit_json(changed=True, result=vm.info())
                         
             if mounts:
-                existing_mounts = get_existing_mounts(vm_name=vm_name)
+                existing_mounts = multipassclient.get_existing_mounts(vm_name=vm_name)
                 expected_mounts = build_expected_mounts_dictionnary(mounts)
                 # Compare existing and expected mounts
                 is_different, target_paths_only_in_expected_mounts, target_paths_only_in_existing_mounts, different_mounts = compare_dictionaries(expected_mounts, existing_mounts)
