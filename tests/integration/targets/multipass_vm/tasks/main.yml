@@ -16,7 +16,7 @@
 
 - name: Get the created VM specs
   theko2fi.multipass.multipass_config_get:
-    key: "local.zazilapus.{{item}}"
+    key: "local.zazilapus.{{ item }}"
   register: create_vm_config
   with_items:
     - memory
@@ -60,10 +60,10 @@
     state: present
     recreate: true
   register: recreate_vm
-  
+
 - name: Get the recreated VM specs
   theko2fi.multipass.multipass_config_get:
-    key: "local.zazilapus.{{item}}"
+    key: "local.zazilapus.{{ item }}"
   register: recreate_vm_config
   with_items:
     - memory
@@ -131,7 +131,7 @@
     purge: true
   register: repurge_vm
 
-- name: Verify that VM purge is idempotent 
+- name: Verify that VM purge is idempotent
   ansible.builtin.assert:
     that:
       - repurge_vm.changed == False
