@@ -1,10 +1,6 @@
 
 from .multipass_sdk import MultipassClientSDK 
 from .multipass_api import MultipassClientAPI 
-
-def get_existing_mounts(vm_name):
-    vm = Multipass().create_client().get_vm(vm_name)
-    return vm.info().get('info').get(vm_name).get("mounts")
         
 
 class Multipass:
