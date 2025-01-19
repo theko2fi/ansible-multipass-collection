@@ -4,7 +4,7 @@
 # Copyright 2023 Kenneth KOFFI (@theko2fi)
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import AnsibleModule, env_fallback
 from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import Multipass, get_existing_mounts
 import os, sys
 
@@ -96,7 +96,7 @@ def main():
                 uid_map=dict(type='list', elements='str')
                 )
             ),
-            multipass_host = dict(required=False, type='str', default='')
+            multipass_host = dict(type='str', fallback=(env_fallback, ['MULTIPASS_HOST']), aliases=['multipass_url'])
         )
     )
 
@@ -245,6 +245,8 @@ short_description: Module to manage Multipass VM
 description:
   - Manage the life cycle of Multipass virtual machines (create, start, stop,
       delete).
+extends_documentation_fragment:
+  - theko2fi.multipass.multipass.api_documentation
 options:
   name:
     description:
