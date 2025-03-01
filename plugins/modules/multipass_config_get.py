@@ -8,20 +8,31 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 from ansible.module_utils.common.text.converters import to_native
-from ansible.module_utils.basic import AnsibleModule , env_fallback
+from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import Multipass
-
+from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass_api import basic_auth_argument_spec
+from ansible_collections.theko2fi.multipass.plugins.module_utils.errors import MultipassAPIAuthenticationError
 
 def main():
-  module = AnsibleModule(
-    argument_spec=dict(
-      key = dict(required=True, type='str'),
-      multipass_host = dict(type='str',fallback=(env_fallback, ['MULTIPASS_HOST']), aliases=['multipass_url'])
-    )
+
+  argument_spec = basic_auth_argument_spec()
+
+  argument_spec.update(
+    key=dict(required=True, type='str'),
   )
+
+  module = AnsibleModule(argument_spec=argument_spec)
   
   key = module.params.get('key')
-  multipassclient = Multipass(multipass_host=module.params.get('multipass_host')).create_client()
+  
+  try:
+    multipassclient = Multipass(
+      multipass_host=module.params.get('multipass_host'),
+      multipass_user=module.params.get('multipass_username'),
+      multipass_pass=module.params.get('multipass_password')
+    ).create_client()
+  except MultipassAPIAuthenticationError as e:
+    module.fail_json(msg=str(e))
 
   try:
     output = multipassclient.get(key=key)
