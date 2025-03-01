@@ -1,6 +1,7 @@
 from ansible_collections.theko2fi.multipass.plugins.module_utils.haikunator import Haikunator
+from ansible.module_utils.basic import env_fallback
 import requests, time
-from .errors import SocketError, MountExistsError, MountNonExistentError
+from .errors import SocketError, MountExistsError, MountNonExistentError, MultipassAPIAuthenticationError
 
 
 class APIClient:
@@ -34,13 +35,43 @@ class APIErrorHandler:
         else:
             raise Exception(err_msg)
 
+
+def basic_auth_argument_spec(spec=None):
+    arg_spec = dict(
+        multipass_host = dict(type='str', fallback=(env_fallback, ['MULTIPASS_HOST']), aliases=['multipass_url', 'multipass_api_url', 'multipass_api_host']),
+        multipass_username = dict(type='str', fallback=(env_fallback, ['MULTIPASS_USERNAME', 'MULTIPASS_USER']), aliases=['multipass_user', 'multipass_api_username', 'multipass_api_user']),
+        multipass_password = dict(type='str', no_log=True, fallback=(env_fallback, ['MULTIPASS_PASSWORD', 'MULTIPASS_PASS']), aliases=['multipass_pass', 'multipass_api_password', 'multipass_api_pass']),
+        validate_certs=dict(type='bool', default=True, aliases=['tls_verify']),
+        ca_cert=dict(type='path', aliases=['tls_ca_cert', 'cacert_path']),
+        client_cert=dict(type='path', aliases=['tls_client_cert', 'cert_path']),
+        client_key=dict(type='path', aliases=['tls_client_key', 'key_path']),
+    )
+    if spec:
+        arg_spec.update(spec)
+    return arg_spec
+
+def get_access_token(base_url, username, password):
+    url = f"{base_url}/login/token"
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    data = {
+        "username": username,
+        "password": password,
+        "grant_type": "password"
+    }
+    
+    response = requests.post(url, headers=headers, data=data)
+    
+    if response.status_code == 200:
+        return response.json()["access_token"]
+    else:
+        raise MultipassAPIAuthenticationError(f'Multipass API authentication failed: {response.json()["detail"]}')
+
 def wait(task_id, timeout=300):
 
     retry = 0
     while retry <= timeout:
         response = requests.get(
-            url=f"http://localhost:9990/status",
-            params={"task_id": task_id}
+            url=f"http://localhost:9990/api/v0.1.0/tasks/{task_id}/status"
         )
         if response.json()["status"] in ["SUCCESS", "FAILURE"]:
             break
@@ -50,24 +81,29 @@ def wait(task_id, timeout=300):
 
 
 class MultipassVM_by_API:
-    def __init__(self, vm_name, multipass_host):
+    def __init__(self, vm_name, multipass_host, headers):
         self.vm_name = vm_name
+        self.headers = headers
         self.multipass_host = multipass_host
 
     def info(self):
-        response = requests.get(url=f"{self.multipass_host}/instances/{self.vm_name}")
+        response = requests.get(url=f"{self.multipass_host}/instances/{self.vm_name}", headers=self.headers)
         return APIErrorHandler.handle_error(response, self.vm_name)
 
     def delete(self, purge=False):
-        response = requests.delete(url=f"{self.multipass_host}/instances/{self.vm_name}", params={'purge': purge})
+        response = requests.delete(url=f"{self.multipass_host}/instances/{self.vm_name}", headers=self.headers, params={'purge': purge})
         APIErrorHandler.handle_error(response, self.vm_name)
 
     def stop(self):
-        response = requests.post(url=f"{self.multipass_host}/instances/{self.vm_name}/stop")
-        APIErrorHandler.handle_error(response, self.vm_name)
+        response = requests.post(url=f"{self.multipass_host}/instances/{self.vm_name}/stop", headers=self.headers)
+        response_data = APIErrorHandler.handle_error(response, self.vm_name)
+        try:
+            wait(task_id=response_data["task_id"])
+        except Exception as e:
+            raise Exception(f"Failed to wait for VM to be stopped: {str(e)}")
 
     def start(self):
-        response = requests.post(url=f"{self.multipass_host}/instances/{self.vm_name}/start")
+        response = requests.post(url=f"{self.multipass_host}/instances/{self.vm_name}/start", headers=self.headers)
         response_data = APIErrorHandler.handle_error(response, self.vm_name)
         try:
             wait(task_id=response_data["task_id"])
@@ -75,14 +111,22 @@ class MultipassVM_by_API:
             raise Exception(f"Failed to wait for VM to start: {str(e)}")
 
     def restart(self):
-        response = requests.post(url=f"{self.multipass_host}/instances/{self.vm_name}/restart")
-        APIErrorHandler.handle_error(response, self.vm_name)
+        response = requests.post(url=f"{self.multipass_host}/instances/{self.vm_name}/restart", headers=self.headers)
+        response_data = APIErrorHandler.handle_error(response, self.vm_name)
+        try:
+            wait(task_id=response_data["task_id"])
+        except Exception as e:
+            raise Exception(f"Failed to wait for VM to restart: {str(e)}")
 
 
 class MultipassClientAPI:
 
-    def __init__(self, multipass_host):
+    def __init__(self, multipass_host, multipass_user, multipass_pass):
         self.multipass_host = multipass_host
+        self.multipass_user = multipass_user
+        self.multipass_pass = multipass_pass
+        self.token = get_access_token(multipass_host, multipass_user, multipass_pass)
+        self.headers = {"Authorization": f"Bearer {self.token}"}
 
     def launch(self, vm_name=None, cpu=1, disk="5G", mem="1G", image=None, cloud_init=None):
         if not vm_name:
@@ -95,19 +139,19 @@ class MultipassClientAPI:
             "cloud_init": cloud_init,
             "image": image
         }
-        response = requests.post(url=f"{self.multipass_host}/instances", json=data)
+        response = requests.post(url=f"{self.multipass_host}/instances", headers=self.headers, json=data)
         response_data = APIErrorHandler.handle_error(response)
         wait(task_id=response_data["task_id"])
-        return MultipassVM_by_API(vm_name=vm_name, multipass_host=self.multipass_host)
+        return MultipassVM_by_API(vm_name=vm_name, headers=self.headers, multipass_host=self.multipass_host)
 
     def get_vm(self, vm_name):
-        return MultipassVM_by_API(vm_name, self.multipass_host)
+        return MultipassVM_by_API(vm_name=vm_name, headers=self.headers, multipass_host=self.multipass_host)
     
     def purge(self):
         pass
 
     def list(self):
-        response = requests.get(url=f"{self.multipass_host}/instances")
+        response = requests.get(url=f"{self.multipass_host}/instances", headers=self.headers)
         return APIErrorHandler.handle_error(response)
 
     def find(self):
@@ -121,24 +165,24 @@ class MultipassClientAPI:
             "uid_map": uid_maps,
             "gid_map": gid_maps
         }
-        response = requests.put(url=f"{self.multipass_host}/instances/{vm_name}/mount", json=data)
+        response = requests.put(url=f"{self.multipass_host}/instances/{vm_name}/mount", headers=self.headers, json=data)
         APIErrorHandler.handle_error(response, vm_name)
 
     def umount(self, mount):
         vm_name, *target_path = mount.split(":")
         params = {"target": target_path[0]} if target_path else None
-        response = requests.delete(url=f"{self.multipass_host}/instances/{vm_name}/umount", params=params)
+        response = requests.delete(url=f"{self.multipass_host}/instances/{vm_name}/umount", headers=self.headers, params=params)
         APIErrorHandler.handle_error(response, vm_name)
 
     def recover(self, vm_name):
-        response = requests.post(url=f"{self.multipass_host}/instances/{vm_name}/recover")
+        response = requests.post(url=f"{self.multipass_host}/instances/{vm_name}/recover", headers=self.headers)
         APIErrorHandler.handle_error(response, vm_name)
     
     def suspend(self):
         pass
 
     def get(self, key):
-        response = requests.get(url=f"{self.multipass_host}/configs/?key={key}")
+        response = requests.get(url=f"{self.multipass_host}/configs/?key={key}", headers=self.headers)
         return APIErrorHandler.handle_error(response)
     
     def get_existing_mounts(self, vm_name):

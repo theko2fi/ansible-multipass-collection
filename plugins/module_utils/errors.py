@@ -18,3 +18,7 @@ class MultipassContentTransferError(Exception):
 
 class SocketError(Exception):
     pass
+
+class MultipassAPIAuthenticationError(Exception):
+    pass
+
