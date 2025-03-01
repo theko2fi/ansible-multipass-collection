@@ -6,6 +6,9 @@
 
 from ansible.module_utils.basic import AnsibleModule, env_fallback
 from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import Multipass
+from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass_api import basic_auth_argument_spec
+from ansible_collections.theko2fi.multipass.plugins.module_utils.errors import MultipassAPIAuthenticationError
+
 import os, sys
 
 
@@ -77,28 +80,30 @@ def build_expected_mounts_dictionnary(mounts: list):
 
 
 def main():
-    module = AnsibleModule(
-        argument_spec=dict(
-            name = dict(required=True, type='str'),
-            image = dict(required=False, type=str, default='ubuntu-lts'),
-            cpus = dict(required=False, type=int, default=1),
-            memory = dict(required=False, type=str, default='1G'),
-            disk = dict(required=False, type=str, default='5G'),
-            cloud_init = dict(required=False, type=str, default=None),
-            state = dict(required=False, type=str, default='present'),
-            recreate = dict(required=False, type=bool, default=False),
-            purge = dict(required=False, type=bool, default=False),
-            mounts = dict(type='list', elements='dict', suboptions=dict(
-                target=dict(type='str'),
-                source=dict(type='str', required=True),
-                type=dict(type='str', choices=['classic', 'native'], default='classic'),
-                gid_map=dict(type='list', elements='str'),
-                uid_map=dict(type='list', elements='str')
-                )
-            ),
-            multipass_host = dict(type='str', fallback=(env_fallback, ['MULTIPASS_HOST']), aliases=['multipass_url'])
+
+    argument_spec = basic_auth_argument_spec()
+
+    argument_spec.update(
+      name = dict(required=True, type='str'),
+      image = dict(required=False, type=str, default='ubuntu-lts'),
+      cpus = dict(required=False, type=int, default=1),
+      memory = dict(required=False, type=str, default='1G'),
+      disk = dict(required=False, type=str, default='5G'),
+      cloud_init = dict(required=False, type=str, default=None),
+      state = dict(required=False, type=str, default='present'),
+      recreate = dict(required=False, type=bool, default=False),
+      purge = dict(required=False, type=bool, default=False),
+      mounts = dict(type='list', elements='dict', suboptions=dict(
+          target=dict(type='str'),
+          source=dict(type='str', required=True),
+          type=dict(type='str', choices=['classic', 'native'], default='classic'),
+          gid_map=dict(type='list', elements='str'),
+          uid_map=dict(type='list', elements='str')
         )
+      )
     )
+    
+    module = AnsibleModule(argument_spec=argument_spec)
 
     vm_name = module.params.get('name')
     image = module.params.get('image')
@@ -110,7 +115,14 @@ def main():
     purge = module.params.get('purge')
     mounts = module.params.get('mounts')
 
-    multipassclient = Multipass(multipass_host=module.params.get('multipass_host')).create_client()
+    try:
+      multipassclient = Multipass(
+        multipass_host=module.params.get('multipass_host'),
+        multipass_user=module.params.get('multipass_username'),
+        multipass_pass=module.params.get('multipass_password')
+      ).create_client()
+    except MultipassAPIAuthenticationError as e:
+      module.fail_json(msg=str(e))
 
     ansible_multipass = AnsibleMultipassVM(vm_name, multipassclient)
 
