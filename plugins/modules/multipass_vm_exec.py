@@ -7,32 +7,44 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-import shlex
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.common.text.converters import to_text, to_bytes
-import subprocess
-from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import MultipassVM
+
+from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import Multipass
+from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass_api import basic_auth_argument_spec
+from ansible_collections.theko2fi.multipass.plugins.module_utils.errors import MultipassAPIAuthenticationError
 
 def main():
-  module = AnsibleModule(
-      argument_spec = dict(
-        name=dict(type='str', required=True),
-        command=dict(type='str', required=True),
-        workdir=dict(type='str', required=False)
-    )
+
+  argument_spec = basic_auth_argument_spec()
+
+  argument_spec.update(
+    name=dict(type='str', required=True),
+    command=dict(type='str', required=True),
+    workdir=dict(type='str', required=False)
   )
+
+  module = AnsibleModule(argument_spec=argument_spec)
 
   name = module.params['name']
   command = module.params['command']
   workdir = module.params['workdir']
 
   try:
-    VM = MultipassVM(vm_name=name, multipass_cmd="multipass")
-    stdout, stderr = VM.exec(
-       cmd_to_execute=command, working_directory=workdir
-      )
+    multipassclient = Multipass(
+      multipass_host=module.params.get('multipass_host'),
+      multipass_user=module.params.get('multipass_username'),
+      multipass_pass=module.params.get('multipass_password')
+    ).create_client()
+  except MultipassAPIAuthenticationError as e:
+    module.fail_json(msg=str(e))
 
-    module.exit_json(changed=True, stdout=stdout, stderr=stderr)
+
+  try:
+    VM = multipassclient.get_vm(vm_name=name)
+    return_code, stdout, stderr = VM.exec(
+       cmd_to_execute=command, working_directory=workdir
+    )
+    module.exit_json(changed=True, rc=return_code, stdout=stdout, stderr=stderr)
   except Exception as e:
     module.fail_json(msg=str(e))
 
@@ -52,7 +64,8 @@ version_added: 0.2.0
 
 description:
   - Executes a command in a Multipass virtual machine.
-
+extends_documentation_fragment:
+  - theko2fi.multipass.multipass.api_documentation
 options:
   name:
     type: str

@@ -93,7 +93,16 @@ class MultipassVM_by_API:
     def delete(self, purge=False):
         response = requests.delete(url=f"{self.multipass_host}/instances/{self.vm_name}", headers=self.headers, params={'purge': purge})
         APIErrorHandler.handle_error(response, self.vm_name)
-
+    
+    def exec(self, cmd_to_execute, working_directory=""):
+        data = {
+            "cmd": cmd_to_execute,
+            "working_directory": working_directory
+        }
+        response = requests.post(url=f"{self.multipass_host}/instances/{self.vm_name}/exec", headers=self.headers, json=data)
+        response_data = APIErrorHandler.handle_error(response, self.vm_name)
+        return response_data["return_code"], response_data["stdout"], response_data["stderr"]
+    
     def stop(self):
         response = requests.post(url=f"{self.multipass_host}/instances/{self.vm_name}/stop", headers=self.headers)
         response_data = APIErrorHandler.handle_error(response, self.vm_name)
