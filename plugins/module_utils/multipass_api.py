@@ -157,7 +157,8 @@ class MultipassClientAPI:
         return MultipassVM_by_API(vm_name=vm_name, headers=self.headers, multipass_host=self.multipass_host)
     
     def purge(self):
-        pass
+        response = requests.delete(url=f"{self.multipass_host}/instances/purge", headers=self.headers)
+        APIErrorHandler.handle_error(response)
 
     def list(self):
         response = requests.get(url=f"{self.multipass_host}/instances", headers=self.headers)

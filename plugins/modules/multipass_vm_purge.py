@@ -10,30 +10,39 @@ __metaclass__ = type
 from ansible.module_utils.common.text.converters import to_native
 
 from ansible.module_utils.basic import AnsibleModule  
-from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import MultipassClient
+from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import Multipass
+from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass_api import basic_auth_argument_spec
+from ansible_collections.theko2fi.multipass.plugins.module_utils.errors import MultipassAPIAuthenticationError
 
 
-def list_vm_deleted():
+def list_vm_deleted(multipassclient):
   instancesDeleted = list()
-  for instance in MultipassClient().list().get('list'):
+  for instance in multipassclient.list().get('list'):
     if instance.get('state') == 'Deleted':
       instancesDeleted.append(instance)
   
   return instancesDeleted
 
 def main():
-  module = AnsibleModule( argument_spec=dict())
+  module = AnsibleModule(argument_spec=basic_auth_argument_spec())
 
   try:
+    multipassclient = Multipass(
+      multipass_host=module.params.get('multipass_host'),
+      multipass_user=module.params.get('multipass_username'),
+      multipass_pass=module.params.get('multipass_password')
+    ).create_client()
     result = dict()
-    result['vm_purged'] = list_vm_deleted()
+    result['vm_purged'] = list_vm_deleted(multipassclient)
     if result['vm_purged']:
-      MultipassClient().purge()
+      multipassclient.purge()
       result['changed']=True
     else:
       # we do nothing if there's no deleted VM to purge
       result['changed']=False
     module.exit_json(**result)
+  except MultipassAPIAuthenticationError as e:
+      module.fail_json(msg=str(e))
   except Exception as e:
     module.fail_json(msg='An unexpected error occurred: {0}'.format(to_native(e)))
 
@@ -55,6 +64,9 @@ description:
   - Purge all deleted Multipass instances permanently, including all their data.
   - This will destroy all the traces of the virtual machine, and cannot be undone.
   - Performs the same function as the C(multipass purge) CLI subcommand.
+
+extends_documentation_fragment:
+  - theko2fi.multipass.multipass.api_documentation
 
 author:
   - "Kenneth KOFFI (@theko2fi)"
