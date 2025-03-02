@@ -10,21 +10,29 @@ __metaclass__ = type
 from ansible.module_utils.common.text.converters import to_native
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import Multipass 
+from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import Multipass
+from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass_api import basic_auth_argument_spec
+from ansible_collections.theko2fi.multipass.plugins.module_utils.errors import MultipassAPIAuthenticationError
 
 
 def main():
-  module = AnsibleModule(
-    argument_spec=dict(
-      name = dict(required=True, type='str'),
-      multipass_host = dict(required=False, type='str', default='')
-      )
-    )
+
+  argument_spec = basic_auth_argument_spec()
+
+  argument_spec.update(
+    name = dict(required=True, type='str')
+  )
+
+  module = AnsibleModule(argument_spec=argument_spec)
   
   vm_name = module.params.get('name')
 
   try:
-    multipassclient = Multipass(multipass_host=module.params.get('multipass_host')).create_client()
+    multipassclient = Multipass(
+      multipass_host=module.params.get('multipass_host'),
+      multipass_user=module.params.get('multipass_username'),
+      multipass_pass=module.params.get('multipass_password')
+    ).create_client()
     vm = multipassclient.get_vm(vm_name=vm_name)
     module.exit_json(
       changed=False,
@@ -38,6 +46,8 @@ def main():
       exists=False,
       result=None,
     )
+  except MultipassAPIAuthenticationError as e:
+    module.fail_json(msg=str(e))
   except Exception as e:
     module.fail_json(msg='An unexpected error occurred: {0}'.format(to_native(e)))
 
@@ -57,7 +67,8 @@ description:
   - Retrieves facts about a Multipass virtual machine.
   - Essentially returns the output of C(multipass info <name>), similar to what M(theko2fi.multipass.multipass_vm)
     returns for a non-absent virtual machine.
-
+extends_documentation_fragment:
+  - theko2fi.multipass.multipass.api_documentation
 options:
   name:
     description:
