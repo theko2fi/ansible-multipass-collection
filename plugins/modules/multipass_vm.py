@@ -4,7 +4,7 @@
 # Copyright 2023 Kenneth KOFFI (@theko2fi)
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from ansible.module_utils.basic import AnsibleModule, env_fallback
+from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import Multipass
 from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass_api import basic_auth_argument_spec
 from ansible_collections.theko2fi.multipass.plugins.module_utils.errors import MultipassAPIAuthenticationError
