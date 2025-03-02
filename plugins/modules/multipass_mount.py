@@ -4,29 +4,27 @@
 # Copyright 2023 Kenneth KOFFI (@theko2fi)
 # GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from ansible.module_utils.basic import AnsibleModule, env_fallback
+from ansible.module_utils.basic import AnsibleModule
 from ansible.errors import AnsibleError
 from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import Multipass
-from ansible_collections.theko2fi.multipass.plugins.module_utils.errors import  MountExistsError, MountNonExistentError
-
-
-
+from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass_api import basic_auth_argument_spec
+from ansible_collections.theko2fi.multipass.plugins.module_utils.errors import  MountExistsError, MountNonExistentError, MultipassAPIAuthenticationError
 
 
 def main():
-    module = AnsibleModule(
-        argument_spec=dict(
-            name = dict(required=True, type='str'),
-            source = dict(type='str'),
-            target = dict(required=False, type='str'),
-            state = dict(required=False, type=str, default='present', choices=['present','absent']),
-            type = dict(type='str', required=False, default='classic', choices=['classic','native']),
-            gid_map = dict(type='list', elements='str', required=False, default=[]),
-            uid_map = dict(type='list', elements='str', required=False, default=[]),
-            multipass_host = dict(type='str',fallback=(env_fallback, ['MULTIPASS_HOST']), aliases=['multipass_url'])
-        ),
-        required_if = [('state', 'present', ['source'])]
+    argument_spec = basic_auth_argument_spec()
+
+    argument_spec.update(
+        name = dict(required=True, type='str'),
+        source = dict(type='str'),
+        target = dict(required=False, type='str'),
+        state = dict(required=False, type=str, default='present', choices=['present','absent']),
+        type = dict(type='str', required=False, default='classic', choices=['classic','native']),
+        gid_map = dict(type='list', elements='str', required=False, default=[]),
+        uid_map = dict(type='list', elements='str', required=False, default=[])
     )
+
+    module = AnsibleModule(argument_spec=argument_spec, required_if=[('state', 'present', ['source'])])
 
     vm_name = module.params.get('name')
     src = module.params.get('source')
@@ -36,7 +34,14 @@ def main():
     uid_map = module.params.get('uid_map')
     mount_type = module.params.get('type')
 
-    multipassclient = Multipass(multipass_host=module.params.get('multipass_host')).create_client()
+    try:
+      multipassclient = Multipass(
+        multipass_host=module.params.get('multipass_host'),
+        multipass_user=module.params.get('multipass_username'),
+        multipass_pass=module.params.get('multipass_password')
+      ).create_client()
+    except MultipassAPIAuthenticationError as e:
+      module.fail_json(msg=str(e))
 
     if state in ('present'):
         dest = dest or src
