@@ -36,9 +36,10 @@ def main():
 
   try:
     output = multipassclient.get(key=key)
-    module.exit_json(changed=False, result=output)
   except Exception as e:
     module.fail_json(msg='An unexpected error occurred: {0}'.format(to_native(e)))
+  
+  module.exit_json(changed=False, result=output)
 
 
 if __name__ == '__main__':
