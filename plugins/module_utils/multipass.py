@@ -1,3 +1,5 @@
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
 import subprocess
 
 from ansible_collections.theko2fi.multipass.plugins.module_utils.haikunator import Haikunator

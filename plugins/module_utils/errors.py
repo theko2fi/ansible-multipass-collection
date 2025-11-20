@@ -1,3 +1,5 @@
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
 #!/usr/bin/python
 #
 # Copyright (c) 2024, Kenneth KOFFI (https://www.linkedin.com/in/kenneth-koffi-6b1218178/)

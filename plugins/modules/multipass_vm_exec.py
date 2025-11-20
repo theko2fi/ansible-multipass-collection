@@ -32,7 +32,7 @@ def main():
        cmd_to_execute=command, working_directory=workdir
       )
 
-    module.exit_json(changed=True, stdout=stdout, stderr=stderr)
+    module.exit_json(changed=True, stdout=to_text(stdout, encoding='utf-8'), stderr=to_text(stderr, encoding='utf-8'))
   except Exception as e:
     module.fail_json(msg=str(e))
 

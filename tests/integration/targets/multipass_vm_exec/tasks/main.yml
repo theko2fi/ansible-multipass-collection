@@ -53,7 +53,7 @@
         - "'stdout_lines' in result_cmd"
         - "'stderr' in result_cmd"
         - "'stderr_lines' in result_cmd"
-        - result_cmd.stdout_lines | length > 0
+        - result_cmd.stdout_lines is truthy
 
   - name: Execute in a present VM and change working directory
     theko2fi.multipass.multipass_vm_exec:
@@ -73,8 +73,8 @@
         - "'stderr' in result_cmd"
         - "'stderr_lines' in result_cmd"
         - result_cmd.stderr == ''
-        - result_cmd.stderr_lines == []
-        - result_cmd.stdout_lines | length > 0
+        - result_cmd.stderr_lines | length == 0
+        - result_cmd.stdout_lines is truthy
 
   - name: Run a simple command
     theko2fi.multipass.multipass_vm_exec:

@@ -10,7 +10,7 @@ __metaclass__ = type
 import os
 import base64
 from io import BytesIO, open as iopen
-from ansible.module_utils._text import to_bytes, to_native
+from ansible.module_utils.common.text.converters import to_bytes, to_native
 import subprocess
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.theko2fi.multipass.plugins.module_utils.multipass import retry_on_failure
